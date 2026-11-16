@@ -1,0 +1,2952 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Phiếu Học Tập Số Tích Hợp PTN Ảo | KHTN 8 - Bài 28: Sự truyền nhiệt</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #f1f5f9;
+            color: #0f172a;
+        }
+        .font-mono-num {
+            font-family: 'JetBrains Mono', monospace;
+        }
+        .btn-phet {
+            transition: transform 0.1s ease, box-shadow 0.15s ease, background-color 0.15s ease;
+        }
+        .btn-phet:active {
+            transform: scale(0.96);
+        }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        textarea:focus, input:focus, select:focus {
+            outline: none;
+            border-color: #ea580c;
+            box-shadow: 0 0 0 3px rgba(234, 88, 12, 0.15);
+        }
+        @media print {
+            body { background: #ffffff !important; }
+            .no-print { display: none !important; }
+            .stage-panel { display: block !important; margin-bottom: 24px; }
+            .print-card { break-inside: avoid; page-break-inside: avoid; box-shadow: none !important; border: 1px solid #cbd5e1 !important; }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- ======================================================================= -->
+    <!-- THANH HEADER & TIẾN TRÌNH 3 NHIỆM VỤ MỞ KHÓA TUẦN TỰ -->
+    <!-- ======================================================================= -->
+    <header class="bg-[#ea580c] text-white sticky top-0 z-30 shadow-md no-print">
+        <div class="max-w-7xl mx-auto px-3 sm:px-5 py-2.5 flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center gap-2.5">
+                <span class="bg-[#0284c7] text-white font-extrabold text-xs px-2.5 py-1 rounded-lg shadow-xs">KHTN 8 • BÀI 28</span>
+                <div>
+                    <h1 class="text-xs sm:text-sm md:text-base font-extrabold tracking-tight">KHÁM PHÁ SỰ TRUYỀN NHIỆT</h1>
+                    <p id="header-group-badge" class="text-[11px] text-orange-100 hidden sm:block">Phiếu học tập số tích hợp Phòng thí nghiệm ảo tương tác</p>
+                </div>
+            </div>
+
+            <!-- Thanh chuyển 3 nhiệm vụ (có cơ chế khóa giai đoạn) -->
+            <nav id="stage-nav" class="hidden items-center gap-1.5 bg-orange-950/35 p-1 rounded-xl overflow-x-auto no-scrollbar">
+                <button onclick="switchStage(1)" id="stage-btn-1" class="px-3 py-1.5 rounded-lg text-xs font-extrabold whitespace-nowrap transition flex items-center gap-1.5">
+                    <span>1. Dự đoán</span>
+                </button>
+                <button onclick="switchStage(2)" id="stage-btn-2" class="px-3 py-1.5 rounded-lg text-xs font-extrabold whitespace-nowrap transition flex items-center gap-1.5">
+                    <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                    <span>2. Thí nghiệm & Quan sát</span>
+                </button>
+                <button onclick="switchStage(3)" id="stage-btn-3" class="px-3 py-1.5 rounded-lg text-xs font-extrabold whitespace-nowrap transition flex items-center gap-1.5">
+                    <i data-lucide="lock" class="w-3.5 h-3.5"></i>
+                    <span>3. Giải thích & Kiến thức</span>
+                </button>
+            </nav>
+
+            <div class="flex items-center gap-2">
+                <button onclick="editGroupInfo()" id="btn-edit-group" class="hidden btn-phet bg-white/15 hover:bg-white/25 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg items-center gap-1 border border-white/20" title="Sửa thông tin nhóm">
+                    <i data-lucide="users" class="w-3.5 h-3.5"></i>
+                    <span class="hidden md:inline">Nhóm</span>
+                </button>
+                <span id="autosave-badge" class="text-[11px] font-semibold bg-orange-950/35 px-2.5 py-1.5 rounded-lg text-amber-200 hidden sm:inline-flex items-center gap-1">
+                    <i data-lucide="save" class="w-3 h-3"></i> Đã lưu tự động
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <!-- ======================================================================= -->
+    <!-- MÀN HÌNH 0: NHẬP THÔNG TIN NHÓM BAN ĐẦU -->
+    <!-- ======================================================================= -->
+    <section id="group-setup-screen" class="flex-1 flex items-center justify-center p-4">
+        <div class="max-w-xl w-full bg-white rounded-3xl shadow-xl border border-slate-200 overflow-hidden">
+            <div class="bg-gradient-to-r from-[#ea580c] to-orange-600 text-white px-6 py-5">
+                <div class="inline-flex items-center gap-1.5 bg-white/20 px-2.5 py-0.5 rounded-full text-[11px] font-bold mb-2">
+                    <i data-lucide="flask-conical" class="w-3.5 h-3.5"></i> KHOA HỌC TỰ NHIÊN 8 – BÀI 28
+                </div>
+                <h2 class="text-lg sm:text-xl font-extrabold">PHIẾU HỌC TẬP SỐ: KHÁM PHÁ SỰ TRUYỀN NHIỆT</h2>
+                <p class="text-xs text-orange-100 mt-1">Nhập đầy đủ thông tin nhóm để bắt đầu hành trình: Dự đoán → Thí nghiệm ảo → Giải thích & Rút ra kiến thức.</p>
+            </div>
+
+            <div class="p-6 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1">Tên nhóm <span class="text-red-500">*</span></label>
+                        <input type="text" id="input-group-name" placeholder="Ví dụ: Nhóm 1 - Lớp 8A1" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 bg-slate-50 font-semibold">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1">Ngày thực hiện <span class="text-red-500">*</span></label>
+                        <input type="date" id="input-exec-date" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-300 bg-slate-50 font-semibold">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label class="text-xs font-extrabold text-slate-700">Họ và tên đầy đủ của các thành viên <span class="text-red-500">*</span></label>
+                        <button type="button" onclick="addMemberRow()" class="text-xs font-bold text-[#0284c7] hover:text-sky-700 flex items-center gap-1">
+                            <i data-lucide="user-plus" class="w-3.5 h-3.5"></i> Thêm thành viên
+                        </button>
+                    </div>
+                    <div id="members-list" class="space-y-2 max-h-52 overflow-y-auto pr-1"></div>
+                </div>
+
+                <div id="group-form-error" class="hidden bg-red-50 border border-red-200 text-red-700 text-xs font-semibold px-3.5 py-2.5 rounded-xl"></div>
+
+                <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
+                    <button type="button" onclick="openResetConfirm()" class="text-xs font-bold text-slate-500 hover:text-red-600 flex items-center gap-1">
+                        <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> Xóa dữ liệu cũ trên máy
+                    </button>
+                    <button type="button" onclick="startWorksheet()" class="btn-phet w-full sm:w-auto bg-[#ea580c] hover:bg-orange-700 text-white font-extrabold text-sm px-6 py-3 rounded-xl shadow-md flex items-center justify-center gap-2">
+                        <span>Bắt đầu Nhiệm vụ 1: Dự đoán</span>
+                        <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ======================================================================= -->
+    <!-- KHUNG CHÍNH PHIẾU HỌC TẬP 3 NHIỆM VỤ -->
+    <!-- ======================================================================= -->
+    <main id="worksheet-main" class="hidden max-w-7xl w-full mx-auto px-3 sm:px-5 py-5 flex-1 space-y-6">
+
+        <!-- Thẻ tóm tắt thông tin nhóm (luôn hiển thị ở đầu bài và khi in PDF) -->
+        <div class="bg-white rounded-2xl px-4 py-3 border border-slate-200 shadow-xs flex flex-wrap items-center justify-between gap-2 text-xs print-card">
+            <div class="flex flex-wrap items-center gap-x-5 gap-y-1">
+                <span><strong class="text-slate-500">Nhóm:</strong> <strong id="disp-group-name" class="text-slate-900"></strong></span>
+                <span><strong class="text-slate-500">Ngày thực hiện:</strong> <strong id="disp-exec-date" class="text-slate-900"></strong></span>
+                <span><strong class="text-slate-500">Thành viên:</strong> <span id="disp-members" class="font-semibold text-slate-800"></span></span>
+            </div>
+            <button onclick="editGroupInfo()" class="text-[#0284c7] font-bold hover:underline no-print">Chỉnh sửa</button>
+        </div>
+
+        <!-- =================================================================== -->
+        <!-- NHIỆM VỤ 1 – DỰ ĐOÁN TRƯỚC KHI THỰC HÀNH -->
+        <!-- =================================================================== -->
+        <section id="stage-1" class="stage-panel space-y-5">
+            <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3 no-print">
+                <div class="w-9 h-9 rounded-xl bg-amber-500 text-white flex items-center justify-center shrink-0 mt-0.5">
+                    <i data-lucide="lightbulb" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <h2 class="text-sm sm:text-base font-extrabold text-amber-950">NHIỆM VỤ 1: DỰ ĐOÁN TRƯỚC KHI THỰC HÀNH (CẢ 4 THÍ NGHIỆM)</h2>
+                    <p class="text-xs text-amber-900 mt-0.5 leading-relaxed">Quan sát hình ảnh trạng thái ban đầu của <strong>cả bốn thí nghiệm</strong> dưới đây và ghi lại dự đoán tự do của nhóm. <em>Lưu ý: Hệ thống không chấm đúng/sai ở bước dự đoán; phòng thí nghiệm ảo sẽ mở khóa ngay sau khi nhóm hoàn thành tất cả dự đoán.</em></p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-5">
+                <!-- THÍ NGHIỆM 1 -->
+                <article class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden flex flex-col print-card">
+                    <div class="bg-slate-800 text-white px-4 py-2.5 flex items-center justify-between">
+                        <span class="font-extrabold text-xs sm:text-sm">THÍ NGHIỆM 1: SỰ DẪN NHIỆT</span>
+                        <span class="text-[11px] bg-amber-500/20 text-amber-200 px-2 py-0.5 rounded-md font-bold">Dự đoán 1</span>
+                    </div>
+                    <div class="p-4 space-y-3.5 flex-1">
+                        <!-- Ảnh chụp trạng thái ban đầu trích từ mô phỏng TN1 -->
+                        <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                            <div class="text-center">
+                                <canvas id="snap-tn1a" class="w-full h-36 rounded-lg bg-white border border-slate-200"></canvas>
+                                <span class="text-[10px] font-bold text-slate-500 block mt-1">Hình 1a: Thanh đồng AB & các đinh sáp</span>
+                            </div>
+                            <div class="text-center">
+                                <canvas id="snap-tn1b" class="w-full h-36 rounded-lg bg-white border border-slate-200"></canvas>
+                                <span class="text-[10px] font-bold text-slate-500 block mt-1">Hình 1b: Thanh Đồng, Thép, Thủy tinh</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-800 mb-1">1.1. Dự đoán thứ tự các đinh ghim (a, b, c, d, e) rơi xuống khi bắt đầu đốt nóng đầu A của thanh đồng AB: <span class="text-red-500">*</span></label>
+                            <textarea rows="2" data-field="p_tn1_order" placeholder="Nhập dự đoán tự do của nhóm..." class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-800 mb-1">1.2. Dự đoán khả năng truyền nhiệt của thanh Đồng, thanh Thép và thanh Thủy tinh có giống nhau không? Thanh nào đinh rơi trước nhất, thanh nào rơi sau cùng? <span class="text-red-500">*</span></label>
+                            <textarea rows="2" data-field="p_tn1_compare" placeholder="Nhập dự đoán tự do của nhóm..." class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- THÍ NGHIỆM 2 -->
+                <article class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden flex flex-col print-card">
+                    <div class="bg-slate-800 text-white px-4 py-2.5 flex items-center justify-between">
+                        <span class="font-extrabold text-xs sm:text-sm">THÍ NGHIỆM 2: SỰ ĐỐI LƯU TRONG CHẤT LỎNG</span>
+                        <span class="text-[11px] bg-amber-500/20 text-amber-200 px-2 py-0.5 rounded-md font-bold">Dự đoán 2</span>
+                    </div>
+                    <div class="p-4 space-y-3.5 flex-1">
+                        <!-- Ảnh chụp trạng thái ban đầu trích từ mô phỏng TN2 -->
+                        <div class="grid grid-cols-2 gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                            <div class="text-center">
+                                <canvas id="snap-tn2a" class="w-full h-36 rounded-lg bg-white border border-slate-200"></canvas>
+                                <span class="text-[10px] font-bold text-slate-500 block mt-1">Hình 2a: Đun ống (1) ở trên & ống (2) ở dưới</span>
+                            </div>
+                            <div class="text-center">
+                                <canvas id="snap-tn2b" class="w-full h-36 rounded-lg bg-white border border-slate-200"></canvas>
+                                <span class="text-[10px] font-bold text-slate-500 block mt-1">Hình 2b: Bình nước có gói thuốc tím ở đáy</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-800 mb-1">2.1. Dự đoán hiện tượng xảy ra với cục sáp khi đun nóng nước ở phía trên (ống 1) so với khi đun ở phía dưới đáy (ống 2): <span class="text-red-500">*</span></label>
+                            <textarea rows="2" data-field="p_tn2_tubes" placeholder="Nhập dự đoán tự do của nhóm..." class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-800 mb-1">2.2. Dự đoán hướng chuyển động của dòng nước (và vệt màu thuốc tím) khi bình nước được đun nóng ở đáy: <span class="text-red-500">*</span></label>
+                            <textarea rows="2" data-field="p_tn2_beaker" placeholder="Nhập dự đoán tự do của nhóm..." class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- THÍ NGHIỆM 3 -->
+                <article class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden flex flex-col print-card">
+                    <div class="bg-slate-800 text-white px-4 py-2.5 flex items-center justify-between">
+                        <span class="font-extrabold text-xs sm:text-sm">THÍ NGHIỆM 3: SỰ ĐỐI LƯU TRONG CHẤT KHÍ</span>
+                        <span class="text-[11px] bg-amber-500/20 text-amber-200 px-2 py-0.5 rounded-md font-bold">Dự đoán 3</span>
+                    </div>
+                    <div class="p-4 space-y-3.5 flex-1">
+                        <!-- Ảnh chụp trạng thái ban đầu trích từ mô phỏng TN3 -->
+                        <div class="bg-slate-50 p-2 rounded-xl border border-slate-200 text-center">
+                            <canvas id="snap-tn3" class="w-full h-36 rounded-lg bg-white border border-slate-200"></canvas>
+                            <span class="text-[10px] font-bold text-slate-500 block mt-1">Hình 3: Chong chóng giấy đặt phía trên hai ngọn nến</span>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-800 mb-1">3.1. Dự đoán hiện tượng xảy ra với chong chóng giấy phía trên khi hai ngọn nến được thắp sáng: <span class="text-red-500">*</span></label>
+                            <textarea rows="2" data-field="p_tn3_fan" placeholder="Nhập dự đoán tự do của nhóm..." class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-800 mb-1">3.2. Dự đoán sự chuyển động của không khí nóng gần ngọn nến và không khí lạnh xung quanh: <span class="text-red-500">*</span></label>
+                            <textarea rows="2" data-field="p_tn3_air" placeholder="Nhập dự đoán tự do của nhóm..." class="w-full px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- THÍ NGHIỆM 4 -->
+                <article class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden flex flex-col print-card">
+                    <div class="bg-slate-800 text-white px-4 py-2.5 flex items-center justify-between">
+                        <span class="font-extrabold text-xs sm:text-sm">THÍ NGHIỆM 4: SỰ TRUYỀN NHIỆT BẰNG BỨC XẠ NHIỆT</span>
+                        <span class="text-[11px] bg-amber-500/20 text-amber-200 px-2 py-0.5 rounded-md font-bold">Dự đoán 4</span>
+                    </div>
+                    <div class="p-4 space-y-3 flex-1">
+                        <!-- Ảnh chụp trạng thái ban đầu trích từ mô phỏng TN4 -->
+                        <div class="grid grid-cols-3 gap-2 bg-slate-50 p-2 rounded-xl border border-slate-200">
+                            <div class="text-center">
+                                <canvas id="snap-tn4a" class="w-full h-32 rounded-lg bg-white border border-slate-200"></canvas>
+                                <span class="text-[10px] font-bold text-slate-500 block mt-1">Hình 4a: Đèn & bình phủ đen</span>
+                            </div>
+                            <div class="text-center">
+                                <canvas id="snap-tn4b" class="w-full h-32 rounded-lg bg-white border border-slate-200"></canvas>
+                                <span class="text-[10px] font-bold text-slate-500 block mt-1">Hình 4b: Tấm gỗ chắn giữa</span>
+                            </div>
+                            <div class="text-center">
+                                <canvas id="snap-tn4c" class="w-full h-32 rounded-lg bg-white border border-slate-200"></canvas>
+                                <span class="text-[10px] font-bold text-slate-500 block mt-1">Hình 4c: Phủ đen & Tráng bạc</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-slate-800 mb-1">4.1. Dự đoán sự thay đổi nhiệt độ của bình cầu phủ đen khi bật bóng đèn chiếu sáng: <span class="text-red-500">*</span></label>
+                            <textarea rows="1" data-field="p_tn4_lamp" placeholder="Nhập dự đoán..." class="w-full px-3 py-1.5 text-xs sm:text-sm rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-800 mb-1">4.2. Dự đoán tác động khi đặt tấm gỗ dày chắn giữa đèn và bình cầu: <span class="text-red-500">*</span></label>
+                            <textarea rows="1" data-field="p_tn4_shield" placeholder="Nhập dự đoán..." class="w-full px-3 py-1.5 text-xs sm:text-sm rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-slate-800 mb-1">4.3. Dự đoán bình có bề mặt màu đen hay bề mặt sáng (tráng bạc) hấp thụ tia nhiệt tốt hơn: <span class="text-red-500">*</span></label>
+                            <textarea rows="1" data-field="p_tn4_surface" placeholder="Nhập dự đoán..." class="w-full px-3 py-1.5 text-xs sm:text-sm rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- Thanh nút mở khóa Nhiệm vụ 2 -->
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 no-print">
+                <p id="stage1-hint" class="text-xs font-semibold text-slate-600">Hãy hoàn thành tất cả 9 câu hỏi dự đoán của cả 4 thí nghiệm để mở khóa Phòng thí nghiệm ảo.</p>
+                <button onclick="tryUnlockStage2()" id="btn-unlock-2" class="btn-phet bg-slate-300 text-slate-500 font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl flex items-center gap-2 cursor-not-allowed shrink-0">
+                    <i data-lucide="lock" class="w-4 h-4"></i>
+                    <span>Hoàn thành dự đoán & Mở khóa Thí nghiệm</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- NHIỆM VỤ 2 – TIẾN HÀNH THÍ NGHIỆM & QUAN SÁT (CHIA MÀN HÌNH 7:3) -->
+        <!-- =================================================================== -->
+        <section id="stage-2" class="stage-panel hidden space-y-4">
+            <div class="bg-orange-50 border border-orange-200 rounded-2xl p-3.5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
+                <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-[#ea580c] text-white flex items-center justify-center shrink-0 mt-0.5">
+                        <i data-lucide="flame" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-orange-950">NHIỆM VỤ 2: TIẾN HÀNH THÍ NGHIỆM ẢO & GHI NHẬN QUAN SÁT</h2>
+                        <p class="text-xs text-orange-900 mt-0.5 leading-relaxed">Chọn từng thí nghiệm trên thanh điều khiển: <strong>Bên trái (7 phần)</strong> là phòng thí nghiệm ảo tương tác trực tiếp, <strong>Bên phải (3 phần)</strong> là câu hỏi ghi nhận kết quả quan sát riêng của thí nghiệm đó.</p>
+                    </div>
+                </div>
+                <button onclick="switchStage(1)" class="btn-phet bg-white hover:bg-orange-100 text-orange-900 border border-orange-300 text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 shrink-0">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Xem lại dự đoán
+                </button>
+            </div>
+
+            <!-- BỐ CỤC CHIA MÀN HÌNH TỈ LỆ 7:3 (BÊN 7: PHÒNG THÍ NGHIỆM | BÊN 3: CÂU HỎI QUAN SÁT RIÊNG TỪNG TN) -->
+            <div class="grid grid-cols-1 lg:grid-cols-10 gap-4 items-stretch no-print">
+                
+                <!-- CỘT TRÁI (7/10): KHÔNG GIAN PHÒNG THÍ NGHIỆM ẢO -->
+                <div class="lg:col-span-7 bg-white rounded-2xl shadow-md border border-slate-300 overflow-hidden flex flex-col">
+                    <!-- Thanh chọn 4 trạm thí nghiệm -->
+                    <div class="bg-[#ea580c] text-white px-3 py-2 flex items-center justify-between gap-2">
+                        <div class="flex items-center gap-1.5 shrink-0">
+                            <span class="bg-[#0284c7] text-white font-extrabold text-xs px-2 py-0.5 rounded-md">PTN ẢO</span>
+                        </div>
+
+                        <nav class="flex items-center gap-1 bg-orange-950/35 p-1 rounded-xl overflow-x-auto no-scrollbar">
+                            <button onclick="switchSimTab(1)" id="sim-nav-1" class="px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1">
+                                <span>TN1: Dẫn nhiệt</span>
+                                <span id="sim-badge-1" class="w-2 h-2 rounded-full bg-amber-300"></span>
+                            </button>
+                            <button onclick="switchSimTab(2)" id="sim-nav-2" class="px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1">
+                                <span>TN2: Đối lưu trong chất lỏng</span>
+                                <span id="sim-badge-2" class="w-2 h-2 rounded-full bg-amber-300"></span>
+                            </button>
+                            <button onclick="switchSimTab(3)" id="sim-nav-3" class="px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1">
+                                <span>TN3: Đối lưu trong chất khí</span>
+                                <span id="sim-badge-3" class="w-2 h-2 rounded-full bg-amber-300"></span>
+                            </button>
+                            <button onclick="switchSimTab(4)" id="sim-nav-4" class="px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap transition-all flex items-center gap-1">
+                                <span>TN4: Bức xạ nhiệt</span>
+                                <span id="sim-badge-4" class="w-2 h-2 rounded-full bg-amber-300"></span>
+                            </button>
+                        </nav>
+
+                        <button onclick="resetCurrentSim()" class="btn-phet bg-white/15 hover:bg-white/25 text-white text-xs font-bold px-2.5 py-1.5 rounded-lg flex items-center gap-1 border border-white/20 shrink-0" title="Đặt lại thí nghiệm hiện tại">
+                            <i data-lucide="rotate-ccw" class="w-3.5 h-3.5 text-amber-200"></i>
+                            <span class="hidden sm:inline">Đặt lại</span>
+                        </button>
+                    </div>
+
+                    <!-- Vùng Canvas mô phỏng trực quan -->
+                    <div class="relative w-full h-[500px] sm:h-[580px] bg-[#f8fafc] overflow-hidden flex-1">
+                        <canvas id="simCanvas" class="w-full h-full block touch-none"></canvas>
+
+                        <!-- Bảng tùy chọn nổi góc trên phải -->
+                        <div id="phet-floating-panel" class="absolute top-2.5 right-2.5 bg-white/95 backdrop-blur-md rounded-2xl shadow-md border border-slate-200/90 p-2.5 flex flex-col gap-1.5 z-10 max-w-[205px]"></div>
+
+                        <!-- Thanh công cụ thao tác chính phía dưới màn hình -->
+                        <div id="phet-bottom-bar" class="absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/95 backdrop-blur-md rounded-2xl shadow-md border border-slate-200/90 px-2.5 py-1.5 flex flex-wrap items-center justify-center gap-1.5 z-10 max-w-[96%]"></div>
+                    </div>
+                </div>
+
+                <!-- CỘT PHẢI (3/10): PHIẾU GHI NHẬN QUAN SÁT RIÊNG CHO THÍ NGHIỆM ĐANG CHỌN -->
+                <div class="lg:col-span-3 bg-white rounded-2xl shadow-md border border-slate-300 flex flex-col overflow-hidden">
+                    <div id="obs-panel-header" class="bg-slate-800 text-white px-4 py-3 flex items-center justify-between">
+                        <span id="obs-panel-title" class="font-extrabold text-xs sm:text-sm">QUAN SÁT TN1: DẪN NHIỆT</span>
+                        <span id="obs-panel-step" class="text-[11px] font-mono-num bg-white/15 px-2 py-0.5 rounded-md">1 / 4</span>
+                    </div>
+
+                    <!-- Nhắc lại dự đoán ban đầu của đúng thí nghiệm đang làm -->
+                    <div id="obs-predict-box" class="bg-sky-50 border-b border-sky-200 px-3.5 py-2.5 text-[11px] text-sky-950 leading-snug"></div>
+
+                    <!-- Nội dung câu hỏi riêng từng thí nghiệm (ẩn/hiện đồng bộ theo tab) -->
+                    <div class="p-4 flex-1 overflow-y-auto space-y-3.5 max-h-[480px]">
+                        <!-- CÂU HỎI QUAN SÁT TN1 -->
+                        <div id="obs-card-1" class="obs-tab-card space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-800 mb-1">1.1. [Chế độ A – Thanh đồng AB] Khi đốt đầu A, các đinh ghim a, b, c, d, e rơi theo thứ tự nào? <span class="text-red-500">*</span></label>
+                                <textarea rows="2" data-field="o_tn1_a" placeholder="Ghi lại thứ tự rơi thực tế quan sát được..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-800 mb-1">1.2. Qua quan sát góc nhìn nguyên tử, em hãy mô tả sự thay đổi chuyển động của các nguyên tử từ đầu A đến đầu B khi đầu A được đốt nóng. Theo em, sự thay đổi đó cho thấy năng lượng đã được truyền đi như thế nào? <span class="text-red-500">*</span></label>
+                                <textarea rows="3" data-field="o_tn1_atom" placeholder="Mô tả sự dao động của các nguyên tử từ đầu A sang đầu B và quá trình truyền năng lượng..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-800 mb-1">1.3. [Chế độ B – So sánh 3 chất liệu] Khi cùng nung nóng Đồng, Thép và Thủy tinh, đinh ở thanh nào rơi trước nhất, thanh nào rơi sau cùng? <span class="text-red-500">*</span></label>
+                                <textarea rows="2" data-field="o_tn1_b" placeholder="Ghi lại kết quả so sánh tốc độ rơi đinh trên 3 thanh..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- CÂU HỎI QUAN SÁT TN2 -->
+                        <div id="obs-card-2" class="obs-tab-card hidden space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-800 mb-1">2.1. [Chế độ A – Hai ống nghiệm] So sánh hiện tượng xảy ra với cục sáp ở đáy ống (1) (đun miệng ống) và ở miệng ống (2) (đun đáy ống): <span class="text-red-500">*</span></label>
+                                <textarea rows="3" data-field="o_tn2_a" placeholder="Ghi kết quả quan sát ở hai ống nghiệm..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-800 mb-1">2.2. [Chế độ B – Bình thuốc tím] Khi đun nóng dưới đáy bình, dòng nước nhuộm thuốc tím di chuyển như thế nào? <span class="text-red-500">*</span></label>
+                                <textarea rows="4" data-field="o_tn2_b" placeholder="Mô tả chiều di chuyển của dòng nước nóng và nước lạnh..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- CÂU HỎI QUAN SÁT TN3 -->
+                        <div id="obs-card-3" class="obs-tab-card hidden space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-800 mb-1">3.1. Khi thắp sáng hai ngọn nến đặt phía dưới, chong chóng giấy có hiện tượng gì? Khi tắt nến thì sao? <span class="text-red-500">*</span></label>
+                                <textarea rows="3" data-field="o_tn3_a" placeholder="Ghi nhận chuyển động của chong chóng giấy..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-800 mb-1">3.2. Quan sát các mũi tên luồng khí: Không khí nóng trên ngọn nến và không khí lạnh xung quanh di chuyển theo hướng nào? <span class="text-red-500">*</span></label>
+                                <textarea rows="4" data-field="o_tn3_b" placeholder="Mô tả chiều di chuyển của luồng khí màu cam và xanh..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                            </div>
+                        </div>
+
+                        <!-- CÂU HỎI QUAN SÁT TN4 -->
+                        <div id="obs-card-4" class="obs-tab-card hidden space-y-3">
+                            <div>
+                                <label class="block text-xs font-bold text-slate-800 mb-1">4.1. [Chế độ A – Tấm gỗ chắn] Mức chất lỏng trong nhiệt kế thay đổi thế nào khi bật đèn chiếu sáng và khi đặt tấm gỗ dày chắn giữa đèn với bình cầu? <span class="text-red-500">*</span></label>
+                                <textarea rows="3" data-field="o_tn4_a" placeholder="Ghi lại sự tăng/giảm của nhiệt kế trong hai trường hợp..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-800 mb-1">4.2. [Chế độ B – So sánh bề mặt] Khi cùng bật đèn chiếu sáng, nhiệt kế ở bình phủ đen và bình tráng bạc thay đổi khác nhau như thế nào? <span class="text-red-500">*</span></label>
+                                <textarea rows="4" data-field="o_tn4_b" placeholder="So sánh tốc độ tăng nhiệt độ của hai bình..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/50"></textarea>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Thanh chuyển nhanh giữa 4 thí nghiệm ngay dưới cột câu hỏi -->
+                    <div class="bg-slate-50 px-3.5 py-2.5 border-t border-slate-200 flex items-center justify-between gap-2">
+                        <button type="button" onclick="prevSimTab()" id="btn-prev-sim" class="btn-phet px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-300 text-slate-700 hover:bg-slate-100 flex items-center gap-1">
+                            <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i> TN trước
+                        </button>
+                        <span id="obs-status-pill" class="text-[11px] font-bold text-amber-700">Chưa điền đủ</span>
+                        <button type="button" onclick="nextSimTab()" id="btn-next-sim" class="btn-phet px-3 py-1.5 rounded-xl text-xs font-bold bg-[#0284c7] text-white hover:bg-sky-700 flex items-center gap-1">
+                            TN tiếp <i data-lucide="chevron-right" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bản tóm tắt quan sát 4 thí nghiệm chỉ hiển thị khi In / Xuất PDF -->
+            <div class="hidden print:grid grid-cols-2 gap-4">
+                <div class="border border-slate-300 rounded-xl p-3 text-xs space-y-1">
+                    <div class="font-bold">Quan sát TN1: Dẫn nhiệt</div>
+                    <p>• 1.1 Thanh đồng AB: <span id="print-o-tn1-a"></span></p>
+                    <p>• 1.2 Góc nhìn nguyên tử: <span id="print-o-tn1-atom"></span></p>
+                    <p>• 1.3 So sánh 3 thanh: <span id="print-o-tn1-b"></span></p>
+                </div>
+                <div class="border border-slate-300 rounded-xl p-3 text-xs space-y-1">
+                    <div class="font-bold">Quan sát TN2: Đối lưu trong chất lỏng</div>
+                    <p>• Hai ống nghiệm: <span id="print-o-tn2-a"></span></p>
+                    <p>• Bình thuốc tím: <span id="print-o-tn2-b"></span></p>
+                </div>
+                <div class="border border-slate-300 rounded-xl p-3 text-xs space-y-1">
+                    <div class="font-bold">Quan sát TN3: Đối lưu trong chất khí</div>
+                    <p>• Chong chóng giấy: <span id="print-o-tn3-a"></span></p>
+                    <p>• Dòng không khí: <span id="print-o-tn3-b"></span></p>
+                </div>
+                <div class="border border-slate-300 rounded-xl p-3 text-xs space-y-1">
+                    <div class="font-bold">Quan sát TN4: Bức xạ nhiệt</div>
+                    <p>• Tấm gỗ chắn: <span id="print-o-tn4-a"></span></p>
+                    <p>• Phủ đen & Tráng bạc: <span id="print-o-tn4-b"></span></p>
+                </div>
+            </div>
+
+            <!-- Nút mở khóa sang Nhiệm vụ 3 -->
+            <div class="bg-white rounded-2xl p-4 border border-slate-200 shadow-xs flex flex-col sm:flex-row items-center justify-between gap-3 no-print">
+                <p id="stage2-hint" class="text-xs font-semibold text-slate-600">Hãy hoàn thành thực hành và ghi đầy đủ kết quả quan sát cho cả 4 thí nghiệm (9 câu hỏi) để mở khóa Nhiệm vụ 3.</p>
+                <button onclick="tryUnlockStage3()" id="btn-unlock-3" class="btn-phet bg-slate-300 text-slate-500 font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl flex items-center gap-2 cursor-not-allowed shrink-0">
+                    <i data-lucide="lock" class="w-4 h-4"></i>
+                    <span>Hoàn thành quan sát & Mở khóa Giải thích</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- =================================================================== -->
+        <!-- NHIỆM VỤ 3 – ĐỐI CHIẾU KẾT QUẢ, GIẢI THÍCH HIỆN TƯỢNG VÀ RÚT RA KIẾN THỨC -->
+        <!-- =================================================================== -->
+        <section id="stage-3" class="stage-panel hidden space-y-6">
+            <div class="bg-purple-50 border border-purple-200 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 no-print">
+                <div class="flex items-start gap-3">
+                    <div class="w-9 h-9 rounded-xl bg-purple-700 text-white flex items-center justify-center shrink-0 mt-0.5">
+                        <i data-lucide="brain-circuit" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h2 class="text-sm sm:text-base font-extrabold text-purple-950">NHIỆM VỤ 3: ĐỐI CHIẾU KẾT QUẢ, GIẢI THÍCH HIỆN TƯỢNG VÀ RÚT RA KIẾN THỨC</h2>
+                        <p class="text-xs text-purple-900 mt-0.5 leading-relaxed">Đối chiếu dự đoán với thực tế, trả lời các câu hỏi giải thích hiện tượng và tự hoàn thiện bảng tổng kết kiến thức sau thí nghiệm.</p>
+                    </div>
+                </div>
+                <button onclick="switchStage(2)" class="btn-phet bg-white hover:bg-purple-100 text-purple-900 border border-purple-300 text-xs font-bold px-3 py-2 rounded-xl flex items-center gap-1.5 shrink-0">
+                    <i data-lucide="arrow-left" class="w-3.5 h-3.5"></i> Quay lại PTN ảo
+                </button>
+            </div>
+
+            <!-- PHẦN A: ĐỐI CHIẾU DỰ ĐOÁN VÀ KẾT QUẢ THỰC NGHIỆM -->
+            <div class="bg-white rounded-2xl border border-slate-200 shadow-xs overflow-hidden print-card">
+                <div class="bg-purple-800 text-white px-5 py-3 flex items-center justify-between">
+                    <h3 class="font-extrabold text-sm sm:text-base">PHẦN A: ĐỐI CHIẾU DỰ ĐOÁN VÀ KẾT QUẢ THỰC NGHIỆM</h3>
+                    <span class="text-xs bg-white/15 px-2.5 py-0.5 rounded-md font-bold">So sánh trực quan</span>
+                </div>
+
+                <div class="p-5 space-y-5">
+                    <p class="text-xs text-slate-600 bg-purple-50/50 p-3 rounded-xl border border-purple-100">Dưới đây là ghi nhận dự đoán (Nhiệm vụ 1) và kết quả quan sát thực tế (Nhiệm vụ 2) của nhóm. Hãy đánh giá mức độ chính xác của dự đoán ban đầu:</p>
+
+                    <!-- So sánh TN1 -->
+                    <div class="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/30">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <h4 class="font-extrabold text-xs sm:text-sm text-[#ea580c] uppercase">1. Thí nghiệm 1 – Sự dẫn nhiệt</h4>
+                            <select data-field="eval_tn1" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white font-bold text-slate-800">
+                                <option value="">-- Đánh giá dự đoán TN1 --</option>
+                                <option value="match">✓ Dự đoán hoàn toàn phù hợp</option>
+                                <option value="part">~ Phù hợp một phần</option>
+                                <option value="diff">✗ Khác biệt nhiều so với thực tế</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                            <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-200 space-y-1">
+                                <div class="font-bold text-amber-900">• Dự đoán ban đầu (NV1):</div>
+                                <div id="compare-p-tn1" class="text-slate-700 italic">Chưa nhập dữ liệu NV1</div>
+                            </div>
+                            <div class="bg-sky-50/60 p-3 rounded-lg border border-sky-200 space-y-1">
+                                <div class="font-bold text-sky-900">• Kết quả quan sát (NV2):</div>
+                                <div id="compare-o-tn1" class="text-slate-700 italic">Chưa nhập dữ liệu NV2</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- So sánh TN2 -->
+                    <div class="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/30">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <h4 class="font-extrabold text-xs sm:text-sm text-[#0284c7] uppercase">2. Thí nghiệm 2 – Đối lưu trong chất lỏng</h4>
+                            <select data-field="eval_tn2" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white font-bold text-slate-800">
+                                <option value="">-- Đánh giá dự đoán TN2 --</option>
+                                <option value="match">✓ Dự đoán hoàn toàn phù hợp</option>
+                                <option value="part">~ Phù hợp một phần</option>
+                                <option value="diff">✗ Khác biệt nhiều so với thực tế</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                            <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-200 space-y-1">
+                                <div class="font-bold text-amber-900">• Dự đoán ban đầu (NV1):</div>
+                                <div id="compare-p-tn2" class="text-slate-700 italic">Chưa nhập dữ liệu NV1</div>
+                            </div>
+                            <div class="bg-sky-50/60 p-3 rounded-lg border border-sky-200 space-y-1">
+                                <div class="font-bold text-sky-900">• Kết quả quan sát (NV2):</div>
+                                <div id="compare-o-tn2" class="text-slate-700 italic">Chưa nhập dữ liệu NV2</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- So sánh TN3 -->
+                    <div class="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/30">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <h4 class="font-extrabold text-xs sm:text-sm text-teal-700 uppercase">3. Thí nghiệm 3 – Đối lưu trong chất khí</h4>
+                            <select data-field="eval_tn3" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white font-bold text-slate-800">
+                                <option value="">-- Đánh giá dự đoán TN3 --</option>
+                                <option value="match">✓ Dự đoán hoàn toàn phù hợp</option>
+                                <option value="part">~ Phù hợp một phần</option>
+                                <option value="diff">✗ Khác biệt nhiều so với thực tế</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                            <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-200 space-y-1">
+                                <div class="font-bold text-amber-900">• Dự đoán ban đầu (NV1):</div>
+                                <div id="compare-p-tn3" class="text-slate-700 italic">Chưa nhập dữ liệu NV1</div>
+                            </div>
+                            <div class="bg-sky-50/60 p-3 rounded-lg border border-sky-200 space-y-1">
+                                <div class="font-bold text-sky-900">• Kết quả quan sát (NV2):</div>
+                                <div id="compare-o-tn3" class="text-slate-700 italic">Chưa nhập dữ liệu NV2</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- So sánh TN4 -->
+                    <div class="border border-slate-200 rounded-xl p-4 space-y-3 bg-slate-50/30">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <h4 class="font-extrabold text-xs sm:text-sm text-amber-700 uppercase">4. Thí nghiệm 4 – Bức xạ nhiệt</h4>
+                            <select data-field="eval_tn4" class="px-3 py-1.5 text-xs rounded-xl border border-slate-300 bg-white font-bold text-slate-800">
+                                <option value="">-- Đánh giá dự đoán TN4 --</option>
+                                <option value="match">✓ Dự đoán hoàn toàn phù hợp</option>
+                                <option value="part">~ Phù hợp một phần</option>
+                                <option value="diff">✗ Khác biệt nhiều so với thực tế</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                            <div class="bg-amber-50/60 p-3 rounded-lg border border-amber-200 space-y-1">
+                                <div class="font-bold text-amber-900">• Dự đoán ban đầu (NV1):</div>
+                                <div id="compare-p-tn4" class="text-slate-700 italic">Chưa nhập dữ liệu NV1</div>
+                            </div>
+                            <div class="bg-sky-50/60 p-3 rounded-lg border border-sky-200 space-y-1">
+                                <div class="font-bold text-sky-900">• Kết quả quan sát (NV2):</div>
+                                <div id="compare-o-tn4" class="text-slate-700 italic">Chưa nhập dữ liệu NV2</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PHẦN B: GIẢI THÍCH HIỆN TƯỢNG VÀ RÚT RA KIẾN THỨC -->
+            <div class="bg-white rounded-2xl border-2 border-emerald-600/40 shadow-xs overflow-hidden print-card">
+                <div class="bg-emerald-700 text-white px-5 py-3 flex items-center justify-between">
+                    <h3 class="font-extrabold text-sm sm:text-base">PHẦN B: GIẢI THÍCH HIỆN TƯỢNG VÀ RÚT RA KIẾN THỨC</h3>
+                    <span class="text-xs bg-white/15 px-2.5 py-0.5 rounded-md font-bold">Trắc nghiệm & Tổng kết</span>
+                </div>
+
+                <div class="p-5 space-y-5">
+                    <!-- Câu hỏi 1: Dẫn nhiệt -->
+                    <div class="bg-orange-50/40 border border-orange-200 rounded-2xl p-4 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="bg-orange-600 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-md">Câu 1: Bản chất dẫn nhiệt</span>
+                            <span class="text-[11px] text-slate-500 font-medium">Gợi ý: Va chạm nguyên tử & cấu trúc kim loại</span>
+                        </div>
+                        <p class="text-xs sm:text-sm font-bold text-slate-800">Trong hiện tượng dẫn nhiệt ở chất rắn, năng lượng nhiệt được truyền từ phần nóng sang phần nguội chủ yếu bằng cách nào?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-start gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200 text-xs font-semibold cursor-pointer hover:border-orange-300">
+                                <input type="radio" name="q1_ans" value="A" data-field="q1_ans" class="mt-0.5 accent-[#ea580c]">
+                                <span>A. Các phân tử dịch chuyển thành dòng tạo thành vòng tuần hoàn chất lưu.</span>
+                            </label>
+                            <label class="flex items-start gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200 text-xs font-semibold cursor-pointer hover:border-orange-300">
+                                <input type="radio" name="q1_ans" value="B" data-field="q1_ans" class="mt-0.5 accent-[#ea580c]">
+                                <span>B. Các nguyên tử/phân tử ở vùng nóng dao động mạnh hơn, va chạm và truyền năng lượng cho các nguyên tử lân cận.</span>
+                            </label>
+                            <label class="flex items-start gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200 text-xs font-semibold cursor-pointer hover:border-orange-300">
+                                <input type="radio" name="q1_ans" value="C" data-field="q1_ans" class="mt-0.5 accent-[#ea580c]">
+                                <span>C. Truyền bằng các tia nhiệt đi thẳng không cần môi trường.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Câu hỏi 2: Đối lưu -->
+                    <div class="bg-sky-50/40 border border-sky-200 rounded-2xl p-4 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="bg-[#0284c7] text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-md">Câu 2: Bản chất đối lưu</span>
+                            <span class="text-[11px] text-slate-500 font-medium">Gợi ý: Khối lượng riêng & chất lưu</span>
+                        </div>
+                        <p class="text-xs sm:text-sm font-bold text-slate-800">Vì sao khi đun nước ở đáy bình, lớp nước ở dưới nóng lên lại có xu hướng di chuyển lên trên?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-start gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200 text-xs font-semibold cursor-pointer hover:border-sky-300">
+                                <input type="radio" name="q2_ans" value="A" data-field="q2_ans" class="mt-0.5 accent-[#0284c7]">
+                                <span>A. Vì nước nóng nở ra, khối lượng riêng giảm nên nhẹ hơn và nổi lên trên.</span>
+                            </label>
+                            <label class="flex items-start gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200 text-xs font-semibold cursor-pointer hover:border-sky-300">
+                                <input type="radio" name="q2_ans" value="B" data-field="q2_ans" class="mt-0.5 accent-[#0284c7]">
+                                <span>B. Vì nước nóng co lại, khối lượng riêng tăng nên di chuyển lên trên.</span>
+                            </label>
+                            <label class="flex items-start gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200 text-xs font-semibold cursor-pointer hover:border-sky-300">
+                                <input type="radio" name="q2_ans" value="C" data-field="q2_ans" class="mt-0.5 accent-[#0284c7]">
+                                <span>C. Vì nước là chất dẫn nhiệt cực tốt nên dòng nhiệt bốc lên nhanh chóng.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Câu hỏi 3: Bức xạ nhiệt -->
+                    <div class="bg-amber-50/40 border border-amber-200 rounded-2xl p-4 space-y-3">
+                        <div class="flex flex-wrap items-center justify-between gap-2">
+                            <span class="bg-amber-600 text-white text-[11px] font-extrabold px-2.5 py-0.5 rounded-md">Câu 3: Bản chất bức xạ nhiệt</span>
+                            <span class="text-[11px] text-slate-500 font-medium">Gợi ý: Tia nhiệt & chân không</span>
+                        </div>
+                        <p class="text-xs sm:text-sm font-bold text-slate-800">Hình thức truyền nhiệt nào có thể truyền được qua cả môi trường chân không (như năng lượng từ Mặt Trời đến Trái Đất)?</p>
+                        <div class="space-y-2">
+                            <label class="flex items-start gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200 text-xs font-semibold cursor-pointer hover:border-amber-300">
+                                <input type="radio" name="q3_ans" value="A" data-field="q3_ans" class="mt-0.5 accent-amber-600">
+                                <span>A. Dẫn nhiệt.</span>
+                            </label>
+                            <label class="flex items-start gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200 text-xs font-semibold cursor-pointer hover:border-amber-300">
+                                <input type="radio" name="q3_ans" value="B" data-field="q3_ans" class="mt-0.5 accent-amber-600">
+                                <span>B. Đối lưu.</span>
+                            </label>
+                            <label class="flex items-start gap-2.5 bg-white p-2.5 rounded-xl border border-slate-200 text-xs font-semibold cursor-pointer hover:border-amber-300">
+                                <input type="radio" name="q3_ans" value="C" data-field="q3_ans" class="mt-0.5 accent-amber-600">
+                                <span>C. Bức xạ nhiệt.</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- HOẠT ĐỘNG: RÚT RA KIẾN THỨC SAU THÍ NGHIỆM -->
+                    <div class="bg-emerald-50/40 border-2 border-emerald-500/40 rounded-2xl p-4 sm:p-5 space-y-4">
+                        <div class="flex items-center gap-2 border-b border-emerald-200 pb-2.5">
+                            <span class="bg-emerald-700 text-white text-xs font-extrabold px-2.5 py-1 rounded-lg">HOẠT ĐỘNG: RÚT RA KIẾN THỨC SAU THÍ NGHIỆM</span>
+                        </div>
+
+                        <!-- Bảng tổng kết đặc điểm truyền nhiệt -->
+                        <div class="space-y-2">
+                            <p class="text-xs sm:text-sm font-bold text-slate-800">1. Hoàn thành bảng đặc điểm truyền nhiệt của ba hình thức sau:</p>
+                            <div class="overflow-x-auto rounded-xl border border-slate-300 bg-white">
+                                <table class="w-full text-left border-collapse text-xs">
+                                    <thead>
+                                        <tr class="bg-slate-800 text-white">
+                                            <th class="py-2.5 px-3.5 font-extrabold w-1/3 border-r border-slate-700">Hình thức truyền nhiệt</th>
+                                            <th class="py-2.5 px-3.5 font-extrabold">Đặc điểm truyền nhiệt</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-slate-200">
+                                        <tr>
+                                            <td class="py-3 px-3.5 font-extrabold text-[#ea580c] bg-orange-50/40 border-r border-slate-200 align-top">Dẫn nhiệt</td>
+                                            <td class="py-2.5 px-3.5 space-y-1.5">
+                                                <label class="block font-bold text-slate-700">Năng lượng được truyền bằng cách nào? <span class="text-red-500">*</span></label>
+                                                <textarea rows="2" data-field="know_char_conduction" placeholder="Nhập câu trả lời của nhóm..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/60"></textarea>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-3 px-3.5 font-extrabold text-[#0284c7] bg-sky-50/40 border-r border-slate-200 align-top">Đối lưu</td>
+                                            <td class="py-2.5 px-3.5 space-y-1.5">
+                                                <label class="block font-bold text-slate-700">Năng lượng được truyền bằng cách nào? <span class="text-red-500">*</span></label>
+                                                <textarea rows="2" data-field="know_char_convection" placeholder="Nhập câu trả lời của nhóm..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/60"></textarea>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-3 px-3.5 font-extrabold text-amber-700 bg-amber-50/40 border-r border-slate-200 align-top">Bức xạ nhiệt</td>
+                                            <td class="py-2.5 px-3.5 space-y-1.5">
+                                                <label class="block font-bold text-slate-700">Năng lượng được truyền bằng cách nào? <span class="text-red-500">*</span></label>
+                                                <textarea rows="2" data-field="know_char_radiation" placeholder="Nhập câu trả lời của nhóm..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/60"></textarea>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Câu hỏi môi trường xảy ra -->
+                        <div class="space-y-3 pt-1">
+                            <p class="text-xs sm:text-sm font-bold text-slate-800">2. Mỗi hình thức truyền nhiệt thường xảy ra trong môi trường nào?</p>
+                            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                                <div class="bg-white p-3 rounded-xl border border-orange-200 space-y-1.5">
+                                    <label class="block text-xs font-extrabold text-[#ea580c]">• Dẫn nhiệt: Chủ yếu xảy ra trong môi trường nào? <span class="text-red-500">*</span></label>
+                                    <input type="text" data-field="know_env_conduction" placeholder="Nhập môi trường..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/60">
+                                </div>
+                                <div class="bg-white p-3 rounded-xl border border-sky-200 space-y-1.5">
+                                    <label class="block text-xs font-extrabold text-[#0284c7]">• Đối lưu: Xảy ra trong môi trường nào? <span class="text-red-500">*</span></label>
+                                    <input type="text" data-field="know_env_convection" placeholder="Nhập môi trường..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/60">
+                                </div>
+                                <div class="bg-white p-3 rounded-xl border border-amber-200 space-y-1.5">
+                                    <label class="block text-xs font-extrabold text-amber-700">• Bức xạ nhiệt: Có thể truyền qua môi trường nào? <span class="text-red-500">*</span></label>
+                                    <input type="text" data-field="know_env_radiation" placeholder="Nhập môi trường..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-slate-50/60">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ý kiến giải thích ngắn (Tùy chọn) -->
+                        <div>
+                            <label class="block text-xs font-bold text-slate-700 mb-1">Ghi chú hoặc giải thích bổ sung ngắn của nhóm (Không bắt buộc):</label>
+                            <input type="text" data-field="b_optional_note" placeholder="Nhập ghi chú ngắn nếu có..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- KHU VỰC NỘP BÀI CHO GIÁO VIÊN QUA GMAIL & XUẤT PDF -->
+            <div id="submit-section" class="bg-white rounded-2xl border-2 border-emerald-600 shadow-lg p-5 space-y-4 no-print">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-200 pb-3">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0">
+                            <i data-lucide="send" class="w-5 h-5"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-extrabold text-sm sm:text-base text-slate-900">NỘP BÀI LÀM CHO GIÁO VIÊN & XUẤT PDF</h3>
+                            <p id="stage3-submit-hint" class="text-xs text-slate-600">Hoàn thành đầy đủ Phần A và Phần B để gửi bài trực tiếp qua Gmail cho giáo viên hoặc xuất phiếu PDF.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap items-center gap-2">
+                        <button onclick="openSummaryModal()" class="btn-phet bg-sky-50 hover:bg-sky-100 text-sky-900 border border-sky-200 font-bold text-xs px-3.5 py-2 rounded-xl flex items-center gap-1.5">
+                            <i data-lucide="eye" class="w-4 h-4"></i>
+                            <span>Xem trước bản tổng hợp bài làm</span>
+                        </button>
+                        <button onclick="exportWorksheetPDF()" class="btn-phet bg-slate-800 hover:bg-slate-900 text-white font-extrabold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5">
+                            <i data-lucide="printer" class="w-4 h-4 text-amber-300"></i>
+                            <span>Xuất PDF / In phiếu</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Khu vực nhập Gmail giáo viên và gửi bài trực tiếp -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-3 items-end bg-emerald-50/50 p-4 rounded-xl border border-emerald-200">
+                    <div class="md:col-span-8">
+                        <label class="block text-xs font-extrabold text-slate-800 mb-1">Địa chỉ Gmail của giáo viên <span class="text-red-500">*</span></label>
+                        <input type="email" id="teacher-email-input" placeholder="Ví dụ: giaovien.khtn@gmail.com" class="w-full px-3.5 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 bg-white font-semibold">
+                    </div>
+                    <div class="md:col-span-4 flex justify-end">
+                        <button onclick="submitToTeacherGmail()" class="btn-phet w-full bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-md flex items-center justify-center gap-1.5">
+                            <i data-lucide="mail" class="w-4 h-4"></i>
+                            <span>Gửi bài qua Gmail</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="submit-feedback" class="hidden text-xs font-bold px-3.5 py-2.5 rounded-xl"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ======================================================================= -->
+    <!-- MODAL XEM TRƯỚC & SAO CHÉP BÀI LÀM TỔNG HỢP -->
+    <!-- ======================================================================= -->
+    <div id="summary-modal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs z-50 hidden items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-3xl w-full shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+            <div class="bg-slate-800 text-white px-5 py-3.5 flex items-center justify-between">
+                <span class="font-extrabold text-sm">Bản tổng hợp bài làm Phiếu học tập Bài 28</span>
+                <button onclick="closeSummaryModal()" class="text-slate-300 hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            <div class="p-4 flex-1 overflow-y-auto">
+                <textarea id="summary-textarea" rows="16" readonly class="w-full p-3 text-xs font-mono-num bg-slate-50 border border-slate-300 rounded-xl text-slate-800 leading-relaxed"></textarea>
+            </div>
+            <div class="bg-slate-50 px-5 py-3 border-t border-slate-200 flex justify-end gap-2">
+                <button onclick="copyReportText()" id="btn-copy-report" class="btn-phet bg-[#0284c7] text-white font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5">
+                    <i data-lucide="copy" class="w-4 h-4"></i> <span>Sao chép toàn bộ</span>
+                </button>
+                <button onclick="closeSummaryModal()" class="btn-phet bg-slate-200 text-slate-800 font-bold text-xs px-4 py-2 rounded-xl">Đóng</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL XÁC NHẬN XÓA DỮ LIỆU (KHÔNG DÙNG confirm()) -->
+    <div id="reset-modal" class="fixed inset-0 bg-slate-900/50 z-50 hidden items-center justify-center p-4 no-print">
+        <div class="bg-white rounded-2xl max-w-sm w-full p-5 shadow-xl border border-slate-200 space-y-4">
+            <h4 class="font-extrabold text-slate-900 text-base">Xóa toàn bộ bài làm trên trình duyệt?</h4>
+            <p class="text-xs text-slate-600 leading-relaxed">Hành động này sẽ xóa thông tin nhóm và tất cả câu trả lời đã lưu để bắt đầu một phiếu học tập mới.</p>
+            <div class="flex justify-end gap-2">
+                <button onclick="closeResetConfirm()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-slate-100 text-slate-700">Hủy</button>
+                <button onclick="confirmFullReset()" class="px-3.5 py-2 rounded-xl text-xs font-bold bg-red-600 text-white">Xóa làm lại</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =========================================================================
+        // PHẦN 1: DỮ LIỆU & TRẠNG THÁI CỦA PHÒNG THÍ NGHIỆM ẢO BÀI 28
+        // =========================================================================
+        const COMPARE_MATS = [
+            { key: 'copper', name: 'Thanh Đồng',      rate: 0.45, loss: 0.0004, color: '#d97706', label: 'Đồng' },
+            { key: 'steel',  name: 'Thanh Thép',      rate: 0.22, loss: 0.0005, color: '#64748b', label: 'Thép' },
+            { key: 'glass',  name: 'Thanh Thủy tinh', rate: 0.095, loss: 0.00045, color: '#38bdf8', label: 'Thủy tinh' }
+        ];
+
+        const N_NODES = 42;
+        const PIN_INDICES = [6, 13, 21, 29, 36];
+        const PIN_LABELS = ['a', 'b', 'c', 'd', 'e'];
+
+        const state = {
+            tab: 1,
+            time: 0,
+            sim1: {
+                mode: 'rod',
+                burnerOn: false,
+                showMicro: false,
+                heat: new Array(N_NODES).fill(0),
+                pins: PIN_INDICES.map(() => ({ melt: 0, fallen: false, fallY: 0, fallVy: 0, angle: 0 }))
+            },
+            sim2Compare: {
+                burnerOn: false,
+                bars: COMPARE_MATS.map(() => ({
+                    heat: new Array(32).fill(0),
+                    melt: 0,
+                    fallen: false,
+                    fallY: 0,
+                    fallVy: 0,
+                    angle: 0
+                }))
+            },
+            sim3Liquid: {
+                mode: 'tubes',
+                burnerPos: 1,
+                tubeBurnerOn: false,
+                showTube1Detail: false,
+                showTube2Convection: false,
+                tube1TopHeat: 0,
+                tube1BotHeat: 0,
+                tube2TopHeat: 0,
+                tube2BotHeat: 0,
+                convectionPhase: 0,
+                wax1Melt: 0,
+                wax2Melt: 0,
+                beakerBurnerOn: false,
+                showConvectionView: false,
+                waterHeat: 0,
+                dyeTracers: Array.from({ length: 28 }, (_, i) => ({
+                    progress: i / 28,
+                    lane: ((i % 4) - 1.5) * 0.055,
+                    speed: 0.0045 + (i % 3) * 0.0005
+                }))
+            },
+            sim4Gas: {
+                candlesOn: false,
+                airTemp: 0,
+                fanAngle: 0,
+                fanSpeed: 0,
+                particles: Array.from({ length: 10 }, (_, i) => ({
+                    progress: i / 10,
+                    side: i % 2 === 0 ? -1 : 1,
+                    offset: ((i % 3) - 1) * 14
+                }))
+            },
+            sim5Rad: {
+                mode: 'shield',
+                lampOn: false,
+                woodBlocked: false,
+                heatLevel: 0.15,
+                blackHeat: 0.15,
+                silverHeat: 0.15
+            }
+        };
+
+        const canvas = document.getElementById('simCanvas');
+        const ctx = canvas.getContext('2d');
+        let hitBoxes = {};
+
+        function resizeCanvas() {
+            if (!canvas || !canvas.parentElement) return;
+            const rect = canvas.parentElement.getBoundingClientRect();
+            if (rect.width === 0 || rect.height === 0) return;
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = rect.width * dpr;
+            canvas.height = rect.height * dpr;
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        function switchSimTab(t) {
+            state.tab = t;
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`sim-nav-${i}`);
+                const card = document.getElementById(`obs-card-${i}`);
+                if (btn) {
+                    if (i === t) {
+                        btn.className = "px-2.5 py-1.5 rounded-lg text-xs font-extrabold whitespace-nowrap bg-white text-[#ea580c] shadow-xs flex items-center gap-1";
+                    } else {
+                        btn.className = "px-2.5 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-orange-100 hover:bg-white/15 flex items-center gap-1";
+                    }
+                }
+                if (card) {
+                    if (i === t) card.classList.remove('hidden');
+                    else card.classList.add('hidden');
+                }
+            }
+
+            const titles = {
+                1: 'QUAN SÁT TN1: DẪN NHIỆT',
+                2: 'QUAN SÁT TN2: ĐỐI LƯU TRONG CHẤT LỎNG',
+                3: 'QUAN SÁT TN3: ĐỐI LƯU TRONG CHẤT KHÍ',
+                4: 'QUAN SÁT TN4: BỨC XẠ NHIỆT'
+            };
+            const titleEl = document.getElementById('obs-panel-title');
+            const stepEl = document.getElementById('obs-panel-step');
+            if (titleEl) titleEl.textContent = titles[t];
+            if (stepEl) stepEl.textContent = `${t} / 4`;
+
+            const prevBtn = document.getElementById('btn-prev-sim');
+            const nextBtn = document.getElementById('btn-next-sim');
+            if (prevBtn) {
+                prevBtn.disabled = (t === 1);
+                prevBtn.classList.toggle('opacity-40', t === 1);
+                prevBtn.classList.toggle('cursor-not-allowed', t === 1);
+            }
+            if (nextBtn) {
+                nextBtn.disabled = (t === 4);
+                nextBtn.classList.toggle('opacity-40', t === 4);
+                nextBtn.classList.toggle('cursor-not-allowed', t === 4);
+            }
+
+            updateObsCompletionBadges();
+            renderSimControls();
+            setTimeout(resizeCanvas, 20);
+        }
+
+        function prevSimTab() {
+            if (state.tab > 1) switchSimTab(state.tab - 1);
+        }
+
+        function nextSimTab() {
+            if (state.tab < 4) switchSimTab(state.tab + 1);
+        }
+
+        function updateObsCompletionBadges() {
+            const tabFields = {
+                1: ['o_tn1_a', 'o_tn1_atom', 'o_tn1_b'],
+                2: ['o_tn2_a', 'o_tn2_b'],
+                3: ['o_tn3_a', 'o_tn3_b'],
+                4: ['o_tn4_a', 'o_tn4_b']
+            };
+            for (let i = 1; i <= 4; i++) {
+                const done = tabFields[i].every(k => getFieldVal(k).length > 0);
+                const dot = document.getElementById(`sim-badge-${i}`);
+                if (dot) {
+                    dot.className = done
+                        ? "w-2 h-2 rounded-full bg-emerald-400"
+                        : "w-2 h-2 rounded-full bg-amber-300";
+                }
+            }
+            const curDone = tabFields[state.tab].every(k => getFieldVal(k).length > 0);
+            const pill = document.getElementById('obs-status-pill');
+            if (pill) {
+                if (curDone) {
+                    pill.textContent = "✓ Đã ghi đủ TN này";
+                    pill.className = "text-[11px] font-extrabold text-emerald-700";
+                } else {
+                    pill.textContent = "Chưa điền đủ";
+                    pill.className = "text-[11px] font-bold text-amber-700";
+                }
+            }
+        }
+
+        function resetCurrentSim() {
+            const t = state.tab;
+            if (t === 1) {
+                state.sim1.burnerOn = false;
+                state.sim1.heat.fill(0);
+                state.sim1.pins = PIN_INDICES.map(() => ({ melt: 0, fallen: false, fallY: 0, fallVy: 0, angle: 0 }));
+                state.sim2Compare.burnerOn = false;
+                state.sim2Compare.bars = COMPARE_MATS.map(() => ({
+                    heat: new Array(32).fill(0), melt: 0, fallen: false, fallY: 0, fallVy: 0, angle: 0
+                }));
+            } else if (t === 2) {
+                state.sim3Liquid.tubeBurnerOn = false;
+                state.sim3Liquid.showTube1Detail = false;
+                state.sim3Liquid.showTube2Convection = false;
+                state.sim3Liquid.tube1TopHeat = 0;
+                state.sim3Liquid.tube1BotHeat = 0;
+                state.sim3Liquid.tube2TopHeat = 0;
+                state.sim3Liquid.tube2BotHeat = 0;
+                state.sim3Liquid.wax1Melt = 0;
+                state.sim3Liquid.wax2Melt = 0;
+                state.sim3Liquid.beakerBurnerOn = false;
+                state.sim3Liquid.showConvectionView = false;
+                state.sim3Liquid.waterHeat = 0;
+            } else if (t === 3) {
+                state.sim4Gas.candlesOn = false;
+                state.sim4Gas.airTemp = 0;
+                state.sim4Gas.fanSpeed = 0;
+            } else if (t === 4) {
+                state.sim5Rad.lampOn = false;
+                state.sim5Rad.woodBlocked = false;
+                state.sim5Rad.heatLevel = 0.15;
+                state.sim5Rad.blackHeat = 0.15;
+                state.sim5Rad.silverHeat = 0.15;
+            }
+            renderSimControls();
+        }
+
+        function renderSimControls() {
+            const panel = document.getElementById('phet-floating-panel');
+            const bar = document.getElementById('phet-bottom-bar');
+            const rem = document.getElementById('obs-predict-box');
+            const t = state.tab;
+
+            // Hiển thị nhắc lại dự đoán của nhóm ngay đầu cột câu hỏi bên phải để đối chiếu
+            if (rem) {
+                const remMap = {
+                    1: `<strong>Đối chiếu dự đoán TN1:</strong> ${getFieldVal('p_tn1_order') || '...'} | <em>So sánh 3 thanh:</em> ${getFieldVal('p_tn1_compare') || '...'}`,
+                    2: `<strong>Đối chiếu dự đoán TN2:</strong> ${getFieldVal('p_tn2_tubes') || '...'} | <em>Thuốc tím:</em> ${getFieldVal('p_tn2_beaker') || '...'}`,
+                    3: `<strong>Đối chiếu dự đoán TN3:</strong> ${getFieldVal('p_tn3_fan') || '...'} | <em>Dòng khí:</em> ${getFieldVal('p_tn3_air') || '...'}`,
+                    4: `<strong>Đối chiếu dự đoán TN4:</strong> ${getFieldVal('p_tn4_lamp') || '...'} | <em>Tấm gỗ:</em> ${getFieldVal('p_tn4_shield') || '...'}`
+                };
+                rem.innerHTML = remMap[t];
+            }
+
+            if (t === 1) {
+                const { mode, burnerOn, showMicro } = state.sim1;
+                const cmpBurnerOn = state.sim2Compare.burnerOn;
+                panel.innerHTML = `
+                    <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Chế độ thí nghiệm</div>
+                    <div class="flex flex-col gap-1">
+                        <button onclick="state.sim1.mode='rod'; renderSimControls()" class="btn-phet text-left px-2.5 py-1 rounded-lg text-[11px] font-bold ${mode==='rod'?'bg-[#0284c7] text-white':'bg-slate-100 text-slate-700'}">Chế độ A: Thanh đồng AB</button>
+                        <button onclick="state.sim1.mode='compare'; renderSimControls()" class="btn-phet text-left px-2.5 py-1 rounded-lg text-[11px] font-bold ${mode==='compare'?'bg-[#0284c7] text-white':'bg-slate-100 text-slate-700'}">Chế độ B: So sánh 3 chất liệu</button>
+                    </div>
+                    ${mode === 'rod' ? `
+                        <label class="flex items-center justify-between gap-2 cursor-pointer text-[11px] font-bold text-slate-700 border-t border-slate-100 pt-1.5">
+                            <span>Góc nhìn nguyên tử</span>
+                            <input type="checkbox" ${showMicro ? 'checked' : ''} onchange="state.sim1.showMicro = this.checked" class="w-3.5 h-3.5 accent-[#ea580c]">
+                        </label>
+                    ` : `
+                        <div class="space-y-0.5 text-[10px] text-slate-600 font-medium border-t border-slate-100 pt-1.5">
+                            <div>• Kích thước 3 thanh: <strong>Như nhau</strong></div>
+                            <div>• Dấu hiệu: <strong>Đinh ghim gắn sáp</strong></div>
+                        </div>
+                    `}
+                `;
+                if (mode === 'rod') {
+                    bar.innerHTML = `
+                        <button onclick="state.sim1.burnerOn=!state.sim1.burnerOn; renderSimControls()" class="btn-phet ${burnerOn?'bg-red-600 text-white':'bg-[#ea580c] text-white'} text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5">
+                            <i data-lucide="flame" class="w-3.5 h-3.5"></i> ${burnerOn ? 'Tắt đèn cồn' : 'Bắt đầu đốt đầu A'}
+                        </button>
+                        <button onclick="resetCurrentSim()" class="btn-phet bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-xl">Đặt lại đinh</button>
+                    `;
+                } else {
+                    bar.innerHTML = `
+                        <button onclick="state.sim2Compare.burnerOn=!state.sim2Compare.burnerOn; renderSimControls()" class="btn-phet ${cmpBurnerOn?'bg-red-600 text-white':'bg-[#ea580c] text-white'} text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5">
+                            <i data-lucide="flame" class="w-3.5 h-3.5"></i> ${cmpBurnerOn ? 'Tắt nguồn nhiệt' : 'Bắt đầu nung nóng 3 thanh'}
+                        </button>
+                        <button onclick="resetCurrentSim()" class="btn-phet bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-xl">Đặt lại thí nghiệm</button>
+                    `;
+                }
+            } else if (t === 2) {
+                const { mode, burnerPos, tubeBurnerOn, beakerBurnerOn, showTube1Detail, showTube2Convection, showConvectionView } = state.sim3Liquid;
+                const isOn = mode === 'tubes' ? tubeBurnerOn : beakerBurnerOn;
+                panel.innerHTML = `
+                    <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Chế độ thí nghiệm</div>
+                    <div class="flex flex-col gap-1">
+                        <button onclick="state.sim3Liquid.mode='tubes'; renderSimControls()" class="btn-phet text-left px-2.5 py-1 rounded-lg text-[11px] font-bold ${mode==='tubes'?'bg-[#0284c7] text-white':'bg-slate-100 text-slate-700'}">Chế độ A: Hai ống nghiệm</button>
+                        <button onclick="state.sim3Liquid.mode='beaker'; renderSimControls()" class="btn-phet text-left px-2.5 py-1 rounded-lg text-[11px] font-bold ${mode==='beaker'?'bg-[#0284c7] text-white':'bg-slate-100 text-slate-700'}">Chế độ B: Bình thuốc tím</button>
+                    </div>
+                    <div class="border-t border-slate-100 pt-1 space-y-0.5 text-[10px] font-bold leading-tight">
+                        <div class="text-orange-600">➔ Cam: Nước nóng đi lên</div>
+                        <div class="text-sky-600">➔ Xanh: Nước lạnh đi xuống</div>
+                    </div>
+                `;
+                if (mode === 'tubes') {
+                    bar.innerHTML = `
+                        <button onclick="state.sim3Liquid.burnerPos=1; state.sim3Liquid.tubeBurnerOn=true; renderSimControls()" class="btn-phet px-2.5 py-1 rounded-xl text-[11px] font-bold ${burnerPos===1 && tubeBurnerOn?'bg-[#ea580c] text-white':'bg-slate-100 text-slate-700'}">Đun ống (1)</button>
+                        <button onclick="state.sim3Liquid.burnerPos=2; state.sim3Liquid.tubeBurnerOn=true; renderSimControls()" class="btn-phet px-2.5 py-1 rounded-xl text-[11px] font-bold ${burnerPos===2 && tubeBurnerOn?'bg-[#ea580c] text-white':'bg-slate-100 text-slate-700'}">Đun ống (2)</button>
+                        <button onclick="state.sim3Liquid.tubeBurnerOn=!state.sim3Liquid.tubeBurnerOn; renderSimControls()" class="btn-phet ${tubeBurnerOn?'bg-red-600 text-white':'bg-emerald-600 text-white'} px-2.5 py-1 rounded-xl text-[11px] font-bold flex items-center gap-1">
+                            <i data-lucide="flame" class="w-3 h-3"></i> ${tubeBurnerOn ? 'Tắt đèn' : 'Bật đèn'}
+                        </button>
+                        <button onclick="state.sim3Liquid.showTube1Detail=!state.sim3Liquid.showTube1Detail; renderSimControls()" class="btn-phet px-2 py-1 rounded-xl text-[11px] font-bold ${showTube1Detail?'bg-amber-600 text-white':'bg-amber-50 text-amber-900 border border-amber-300'}">
+                            ${showTube1Detail ? 'Ẩn chi tiết ống (1)' : 'Chi tiết ống (1)'}
+                        </button>
+                        <button onclick="state.sim3Liquid.showTube2Convection=!state.sim3Liquid.showTube2Convection; renderSimControls()" class="btn-phet px-2 py-1 rounded-xl text-[11px] font-bold ${showTube2Convection?'bg-purple-700 text-white':'bg-purple-50 text-purple-900 border border-purple-300'}">
+                            ${showTube2Convection ? 'Ẩn đối lưu ống (2)' : 'Đối lưu ống (2)'}
+                        </button>
+                    `;
+                } else {
+                    bar.innerHTML = `
+                        <button onclick="state.sim3Liquid.beakerBurnerOn=!state.sim3Liquid.beakerBurnerOn; renderSimControls()" class="btn-phet ${isOn?'bg-red-600 text-white':'bg-[#ea580c] text-white'} text-[11px] font-bold px-3 py-1 rounded-xl flex items-center gap-1">
+                            <i data-lucide="flame" class="w-3.5 h-3.5"></i> ${isOn ? 'Tắt đèn cồn' : 'Bắt đầu đun bình nước'}
+                        </button>
+                        <button onclick="state.sim3Liquid.showConvectionView=!state.sim3Liquid.showConvectionView; renderSimControls()" class="btn-phet ${showConvectionView?'bg-purple-700 text-white':'bg-[#0284c7] text-white'} text-[11px] font-bold px-3 py-1 rounded-xl flex items-center gap-1">
+                            <i data-lucide="eye" class="w-3.5 h-3.5"></i> ${showConvectionView ? 'Quay lại gói thuốc tím' : 'Quan sát dòng đối lưu'}
+                        </button>
+                        <button onclick="resetCurrentSim()" class="btn-phet bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold px-2.5 py-1 rounded-xl">Đặt lại</button>
+                    `;
+                }
+            } else if (t === 3) {
+                const { candlesOn } = state.sim4Gas;
+                panel.innerHTML = `
+                    <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Chú thích dòng khí</div>
+                    <div class="space-y-0.5 text-[10px] font-bold leading-tight">
+                        <div class="text-orange-600">↑ Khí nóng nở ra, nhẹ hơn đi lên</div>
+                        <div class="text-sky-600">↓ Khí lạnh xung quanh tràn xuống</div>
+                    </div>
+                `;
+                bar.innerHTML = `
+                    <button onclick="state.sim4Gas.candlesOn=!state.sim4Gas.candlesOn; renderSimControls()" class="btn-phet ${candlesOn?'bg-red-600 text-white':'bg-[#ea580c] text-white'} text-xs font-bold px-3.5 py-1.5 rounded-xl flex items-center gap-1.5">
+                        <i data-lucide="flame" class="w-3.5 h-3.5"></i> ${candlesOn ? 'Tắt nguồn nhiệt (2 nến)' : 'Thắp sáng 2 ngọn nến'}
+                    </button>
+                    <button onclick="resetCurrentSim()" class="btn-phet bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold px-3 py-1.5 rounded-xl">Đặt lại</button>
+                `;
+            } else if (t === 4) {
+                const { mode, lampOn, woodBlocked } = state.sim5Rad;
+                panel.innerHTML = `
+                    <div class="text-[10px] font-extrabold uppercase tracking-wider text-slate-400">Chế độ thí nghiệm</div>
+                    <div class="flex flex-col gap-1">
+                        <button onclick="state.sim5Rad.mode='shield'; renderSimControls()" class="btn-phet text-left px-2 py-1 rounded-lg text-[11px] font-bold ${mode==='shield'?'bg-[#0284c7] text-white':'bg-slate-100 text-slate-700'}">Chế độ A: Tấm gỗ chắn</button>
+                        <button onclick="state.sim5Rad.mode='compare'; renderSimControls()" class="btn-phet text-left px-2 py-1 rounded-lg text-[11px] font-bold ${mode==='compare'?'bg-[#0284c7] text-white':'bg-slate-100 text-slate-700'}">Chế độ B: So sánh bề mặt</button>
+                    </div>
+                    <div class="space-y-0.5 text-[10px] text-slate-600 font-medium border-t border-slate-100 pt-1 leading-tight">
+                        ${mode === 'shield' ? `
+                            <div>• Bình: <strong>Phủ đen</strong></div>
+                            <div>• Vật chắn: <strong>Tấm gỗ dày</strong></div>
+                        ` : `
+                            <div>• Trái: <strong>Phủ đen</strong></div>
+                            <div>• Phải: <strong>Tráng bạc</strong></div>
+                        `}
+                    </div>
+                `;
+                if (mode === 'shield') {
+                    bar.innerHTML = `
+                        <button onclick="state.sim5Rad.lampOn=!state.sim5Rad.lampOn; renderSimControls()" class="btn-phet ${lampOn?'bg-amber-500 text-amber-950':'bg-[#ea580c] text-white'} text-[11px] font-bold px-3 py-1 rounded-xl flex items-center gap-1">
+                            <i data-lucide="sun" class="w-3.5 h-3.5"></i> ${lampOn ? 'Tắt đèn điện' : '1. Bật đèn điện dây tóc'}
+                        </button>
+                        <button onclick="state.sim5Rad.woodBlocked=!state.sim5Rad.woodBlocked; renderSimControls()" class="btn-phet ${woodBlocked?'bg-amber-800 text-white':'bg-slate-100 text-slate-700 border border-slate-300'} text-[11px] font-bold px-3 py-1 rounded-xl flex items-center gap-1">
+                            <i data-lucide="shield" class="w-3.5 h-3.5"></i> ${woodBlocked ? 'Rút tấm gỗ ra' : '2. Đặt tấm gỗ dày chắn giữa'}
+                        </button>
+                    `;
+                } else {
+                    bar.innerHTML = `
+                        <button onclick="state.sim5Rad.lampOn=!state.sim5Rad.lampOn; renderSimControls()" class="btn-phet ${lampOn?'bg-amber-500 text-amber-950':'bg-[#ea580c] text-white'} text-[11px] font-bold px-3 py-1 rounded-xl flex items-center gap-1">
+                            <i data-lucide="sun" class="w-3.5 h-3.5"></i> ${lampOn ? 'Tắt đèn điện' : 'Bật đèn chiếu 2 bình'}
+                        </button>
+                        <button onclick="resetCurrentSim()" class="btn-phet bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-bold px-2.5 py-1 rounded-xl">Đặt lại nhiệt độ</button>
+                    `;
+                }
+            }
+            lucide.createIcons();
+        }
+
+        // =========================================================================
+        // PHẦN 2: CÁC HÀM VẼ MÔ PHỎNG VẬT LÝ CHI TIẾT (ĐÃ CĂN CHỈNH KHÔNG CHE KHUẤT)
+        // =========================================================================
+        function drawArrow(c, x1, y1, x2, y2, color, label = "", pos = "top") {
+            const dx = x2 - x1, dy = y2 - y1;
+            const len = Math.hypot(dx, dy);
+            if (len < 6) return;
+            const ang = Math.atan2(dy, dx);
+            const head = 9;
+            c.save();
+            c.strokeStyle = color;
+            c.fillStyle = color;
+            c.lineWidth = 3;
+            c.lineCap = 'round';
+            c.beginPath(); c.moveTo(x1, y1); c.lineTo(x2, y2); c.stroke();
+
+            c.beginPath();
+            c.moveTo(x2, y2);
+            c.lineTo(x2 - head * Math.cos(ang - Math.PI / 6), y2 - head * Math.sin(ang - Math.PI / 6));
+            c.lineTo(x2 - head * Math.cos(ang + Math.PI / 6), y2 - head * Math.sin(ang + Math.PI / 6));
+            c.closePath();
+            c.fill();
+
+            if (label) {
+                c.font = 'bold 11px "Be Vietnam Pro"';
+                c.textAlign = 'center';
+                let tx = (x1 + x2) / 2, ty = (y1 + y2) / 2;
+                if (pos === 'top') ty -= 10;
+                if (pos === 'bottom') ty += 18;
+                if (pos === 'left') { tx = Math.min(x1, x2) - 42; ty += 4; }
+                if (pos === 'right') { tx = Math.max(x1, x2) + 42; ty += 4; }
+                if (pos === 'outside-left') { tx = Math.min(x1, x2) - 82; ty += 4; }
+                if (pos === 'outside-right') { tx = Math.max(x1, x2) + 92; ty += 4; }
+                c.fillText(label, tx, ty);
+            }
+            c.restore();
+        }
+
+        function drawCurvedArrow(c, x1, y1, cx1, cy1, cx2, cy2, x2, y2, color) {
+            const head = 10;
+            const ang = Math.atan2(y2 - cy2, x2 - cx2);
+            c.save();
+            c.strokeStyle = color;
+            c.fillStyle = color;
+            c.lineWidth = 3;
+            c.lineCap = 'round';
+            c.beginPath();
+            c.moveTo(x1, y1);
+            c.bezierCurveTo(cx1, cy1, cx2, cy2, x2, y2);
+            c.stroke();
+
+            c.beginPath();
+            c.moveTo(x2, y2);
+            c.lineTo(x2 - head * Math.cos(ang - Math.PI / 6), y2 - head * Math.sin(ang - Math.PI / 6));
+            c.lineTo(x2 - head * Math.cos(ang + Math.PI / 6), y2 - head * Math.sin(ang + Math.PI / 6));
+            c.closePath();
+            c.fill();
+            c.restore();
+        }
+
+        function drawAlcoholBurner(c, x, y, isOn, scale = 1) {
+            c.save();
+            c.translate(x, y);
+            c.scale(scale, scale);
+
+            c.fillStyle = 'rgba(14, 165, 233, 0.25)';
+            c.strokeStyle = '#475569';
+            c.lineWidth = 2.5;
+            c.beginPath();
+            c.roundRect(-26, 0, 52, 42, [10, 10, 14, 14]);
+            c.fill(); c.stroke();
+
+            c.fillStyle = 'rgba(2, 132, 199, 0.35)';
+            c.fillRect(-23, 18, 46, 21);
+
+            c.fillStyle = '#94a3b8';
+            c.fillRect(-10, -8, 20, 8);
+            c.strokeStyle = '#f8fafc';
+            c.lineWidth = 3;
+            c.beginPath(); c.moveTo(0, -8); c.lineTo(0, -16); c.stroke();
+
+            if (isOn) {
+                const flicker = Math.sin(state.time * 16) * 2.5;
+                const grad = c.createRadialGradient(0, -32, 2, 0, -32, 24);
+                grad.addColorStop(0, '#fef08a');
+                grad.addColorStop(0.55, '#f97316');
+                grad.addColorStop(1, 'rgba(239, 68, 68, 0)');
+                c.fillStyle = grad;
+                c.beginPath();
+                c.moveTo(-13, -15);
+                c.quadraticCurveTo(-15, -36, flicker, -56);
+                c.quadraticCurveTo(15, -36, 13, -15);
+                c.closePath();
+                c.fill();
+            }
+            c.restore();
+        }
+
+        function heatToColor(h, baseHex) {
+            if (h <= 0.02) return baseHex;
+            const r = Math.round(180 + h * 75);
+            const g = Math.round(130 - h * 85);
+            const b = Math.round(90 - h * 75);
+            return `rgb(${r}, ${g}, ${b})`;
+        }
+
+        function drawQualitativeThermometer(c, x, y, h, level, label = "", labelOffsetY = 0) {
+            c.save();
+            c.fillStyle = '#ffffff';
+            c.strokeStyle = '#334155';
+            c.lineWidth = 2;
+            c.beginPath(); c.roundRect(x - 6, y, 12, h - 14, 6); c.fill(); c.stroke();
+
+            const fillH = Math.max(8, (h - 24) * level);
+            c.fillStyle = '#ef4444';
+            c.fillRect(x - 3, y + h - 16 - fillH, 6, fillH);
+
+            c.beginPath(); c.arc(x, y + h - 10, 11, 0, Math.PI * 2);
+            c.fillStyle = '#ef4444'; c.fill(); c.stroke();
+
+            c.strokeStyle = '#94a3b8'; c.lineWidth = 1;
+            for (let sy = y + 12; sy < y + h - 22; sy += 10) {
+                c.beginPath(); c.moveTo(x - 5, sy); c.lineTo(x - 1, sy); c.stroke();
+            }
+            if (label) {
+                c.fillStyle = '#0f172a'; c.font = 'bold 11px "Be Vietnam Pro"'; c.textAlign = 'center';
+                c.fillText(label, x, y - 8 + labelOffsetY);
+            }
+            c.restore();
+        }
+
+        // --- VẼ TN1A: THANH ĐỒNG AB ---
+        function drawSim1(c, w, h, isSnapshot = false) {
+            const { burnerOn, showMicro, heat, pins } = state.sim1;
+            const activeBurner = isSnapshot ? false : burnerOn;
+
+            if (!isSnapshot) {
+                if (burnerOn) {
+                    heat[0] = Math.min(1.0, heat[0] + 0.045);
+                } else {
+                    heat[0] = Math.max(0, heat[0] - 0.012);
+                }
+                for (let step = 0; step < 5; step++) {
+                    const next = [...heat];
+                    for (let i = 1; i < N_NODES; i++) {
+                        const left = heat[i - 1];
+                        const right = i < N_NODES - 1 ? heat[i + 1] : heat[i];
+                        const diff = 0.25 * (left + right - 2 * heat[i]);
+                        const cooling = 0.00012 * heat[i];
+                        next[i] = Math.max(0, Math.min(1, heat[i] + diff - cooling));
+                    }
+                    for (let i = 1; i < N_NODES; i++) heat[i] = next[i];
+                }
+            }
+
+            const rodW = Math.min(500, w * 0.62);
+            const rodH = 26;
+            const rodX = (w - rodW) / 2 - 15;
+            const rodY = h / 2 - 20;
+
+            const standX = rodX + rodW - 14;
+            c.fillStyle = '#334155';
+            c.fillRect(standX - 5, rodY - 45, 10, 195);
+            c.fillRect(standX - 45, rodY + 145, 90, 12);
+            c.fillStyle = '#64748b';
+            c.fillRect(standX - 12, rodY - 6, 24, rodH + 12);
+
+            const segW = rodW / N_NODES;
+            if (!showMicro || isSnapshot) {
+                for (let i = 0; i < N_NODES; i++) {
+                    c.fillStyle = heatToColor(isSnapshot ? 0 : heat[i], '#d97706');
+                    c.fillRect(rodX + i * segW, rodY, segW + 0.6, rodH);
+                }
+                c.strokeStyle = '#78350f';
+                c.lineWidth = 2;
+                c.strokeRect(rodX, rodY, rodW, rodH);
+            } else {
+                c.strokeStyle = 'rgba(217, 119, 6, 0.45)';
+                c.lineWidth = 1.5;
+                c.strokeRect(rodX, rodY - 4, rodW, rodH + 8);
+                for (let i = 0; i < N_NODES; i++) {
+                    const localH = heat[i];
+                    const amp = 0.8 + localH * 7.5;
+                    for (let row = 0; row < 2; row++) {
+                        const baseX = rodX + (i + 0.5) * segW;
+                        const baseY = rodY + 6 + row * 14;
+                        const phase = state.time * (8 + localH * 24) + i * 0.9 + row * 2.1;
+                        const dx = Math.sin(phase) * amp;
+                        const dy = Math.cos(phase * 1.15) * amp;
+                        c.fillStyle = '#ea580c';
+                        c.beginPath();
+                        c.arc(baseX + dx, baseY + dy, 4.3, 0, Math.PI * 2);
+                        c.fill();
+                        c.strokeStyle = '#9a3412';
+                        c.lineWidth = 1;
+                        c.stroke();
+                    }
+                }
+            }
+
+            c.fillStyle = '#0f172a'; c.font = 'bold 14px "Be Vietnam Pro"'; c.textAlign = 'center';
+            c.fillText('A', rodX - 14, rodY + 18);
+            c.fillText('B', rodX + rodW + 16, rodY + 18);
+
+            const trayY = rodY + 145;
+            c.fillStyle = '#cbd5e1';
+            c.beginPath(); c.roundRect(rodX + 35, trayY, rodW - 110, 10, 4); c.fill();
+
+            PIN_INDICES.forEach((nodeIdx, idx) => {
+                const pin = isSnapshot ? { melt: 0, fallen: false, fallY: 0, fallVy: 0, angle: 0 } : pins[idx];
+                const px = rodX + (nodeIdx + 0.5) * segW;
+                const localHeat = isSnapshot ? 0 : heat[nodeIdx];
+
+                if (!isSnapshot) {
+                    if (!pin.fallen && localHeat > 0.26) {
+                        pin.melt = Math.min(1, pin.melt + 0.032);
+                        if (pin.melt >= 1) pin.fallen = true;
+                    }
+                    if (pin.fallen) {
+                        pin.fallVy += 0.45;
+                        pin.fallY += pin.fallVy;
+                        pin.angle = Math.min(Math.PI / 2, pin.angle + 0.06);
+                        if (rodY + rodH + 6 + pin.fallY >= trayY - 4) {
+                            pin.fallY = trayY - 4 - (rodY + rodH + 6);
+                            pin.fallVy = 0;
+                        }
+                    }
+                }
+
+                if (!pin.fallen) {
+                    c.fillStyle = '#fde047';
+                    c.strokeStyle = '#ca8a04';
+                    c.lineWidth = 1.5;
+                    c.beginPath();
+                    c.arc(px, rodY + rodH + 3, 6.5 * (1 - pin.melt * 0.45), 0, Math.PI * 2);
+                    c.fill(); c.stroke();
+                }
+
+                c.save();
+                c.translate(px, rodY + rodH + 6 + pin.fallY);
+                c.rotate(pin.angle);
+                c.fillStyle = '#475569';
+                c.fillRect(-3.5, 0, 7, 3);
+                c.fillRect(-1.5, 3, 3, 24);
+                c.restore();
+
+                c.fillStyle = '#0f172a'; c.font = 'bold 12px "Be Vietnam Pro"';
+                c.fillText(PIN_LABELS[idx], px, rodY - 12);
+            });
+
+            const burnerX = rodX + 10, burnerY = rodY + 75;
+            drawAlcoholBurner(c, burnerX, burnerY, activeBurner, 1);
+            if (!isSnapshot) hitBoxes.burner1 = { x: burnerX - 35, y: burnerY - 50, w: 70, h: 95 };
+        }
+
+        // --- VẼ TN1B: SO SÁNH 3 CHẤT LIỆU ---
+        function drawSim2Compare(c, w, h, isSnapshot = false) {
+            const { burnerOn, bars } = state.sim2Compare;
+            const activeBurner = isSnapshot ? false : burnerOn;
+            const hubX = w * 0.50;
+            const hubY = h * 0.45;
+            const barLen = Math.min(155, Math.min(w, h) * 0.25);
+            const barThick = 11;
+
+            const branchConfigs = [
+                { angle: (-128 * Math.PI) / 180, labelOffset: { x: -72, y: -12 }, align: 'right' },
+                { angle: 0,                        labelOffset: { x: 38,  y: 5   }, align: 'left'  },
+                { angle: (128 * Math.PI) / 180,  labelOffset: { x: -68, y: 14  }, align: 'right' }
+            ];
+
+            c.fillStyle = '#475569';
+            c.fillRect(0, hubY - 5, hubX - 28, 10);
+            c.strokeStyle = '#1e293b';
+            c.lineWidth = 2;
+            c.strokeRect(0, hubY - 5, hubX - 28, 10);
+
+            COMPARE_MATS.forEach((mat, idx) => {
+                const bar = isSnapshot
+                    ? { heat: new Array(32).fill(0), melt: 0, fallen: false, fallY: 0, fallVy: 0, angle: 0 }
+                    : bars[idx];
+                const cfg = branchConfigs[idx];
+                const nodes = bar.heat;
+
+                if (!isSnapshot) {
+                    if (burnerOn) {
+                        nodes[0] = Math.min(1, nodes[0] + 0.045);
+                    } else {
+                        nodes[0] = Math.max(0, nodes[0] - 0.02);
+                    }
+                    for (let s = 0; s < 5; s++) {
+                        const next = [...nodes];
+                        for (let i = 1; i < nodes.length; i++) {
+                            const left = nodes[i - 1];
+                            const right = i < nodes.length - 1 ? nodes[i + 1] : nodes[i];
+                            next[i] = Math.max(0, Math.min(1, nodes[i] + mat.rate * (left + right - 2 * nodes[i]) - mat.loss * nodes[i]));
+                        }
+                        for (let i = 1; i < nodes.length; i++) nodes[i] = next[i];
+                    }
+                }
+
+                c.save();
+                c.translate(hubX, hubY);
+                c.rotate(cfg.angle);
+                const segW = barLen / nodes.length;
+                for (let i = 0; i < nodes.length; i++) {
+                    c.fillStyle = heatToColor(nodes[i], mat.color);
+                    c.fillRect(i * segW, -barThick / 2, segW + 0.6, barThick);
+                }
+                c.strokeStyle = '#334155';
+                c.lineWidth = 2;
+                c.strokeRect(0, -barThick / 2, barLen, barThick);
+                c.restore();
+
+                const tipDist = barLen - 8;
+                const tipX = hubX + Math.cos(cfg.angle) * tipDist;
+                const tipY = hubY + Math.sin(cfg.angle) * tipDist;
+
+                if (!isSnapshot) {
+                    const tipHeat = nodes[nodes.length - 2];
+                    const meltThreshold = mat.key === 'glass' ? 0.14 : 0.28;
+                    if (!bar.fallen && tipHeat > meltThreshold) {
+                        const meltRate = mat.key === 'glass' ? 0.032 : 0.04;
+                        bar.melt = Math.min(1, bar.melt + (tipHeat - meltThreshold + 0.04) * meltRate);
+                        if (bar.melt >= 1) bar.fallen = true;
+                    }
+                    if (bar.fallen) {
+                        bar.fallVy += 0.48;
+                        bar.fallY += bar.fallVy;
+                        bar.angle = Math.min(Math.PI / 2, bar.angle + 0.065);
+                        if (tipY + bar.fallY > h - 75) {
+                            bar.fallY = h - 75 - tipY;
+                            bar.fallVy = 0;
+                        }
+                    }
+                }
+
+                if (!bar.fallen) {
+                    c.fillStyle = '#fef9c3';
+                    c.strokeStyle = '#64748b';
+                    c.lineWidth = 1.5;
+                    c.beginPath();
+                    c.arc(tipX, tipY - 2, 7.5 * (1 - bar.melt * 0.4), 0, Math.PI * 2);
+                    c.fill();
+                    c.stroke();
+                }
+
+                c.save();
+                c.translate(tipX, tipY - 4 + bar.fallY);
+                c.rotate(bar.angle);
+                c.fillStyle = '#cbd5e1';
+                c.strokeStyle = '#334155';
+                c.lineWidth = 1.6;
+                c.beginPath();
+                c.moveTo(-9, 0);
+                c.lineTo(9, 0);
+                c.lineTo(5, -4);
+                c.lineTo(-5, -4);
+                c.closePath();
+                c.fill(); c.stroke();
+                c.fillStyle = '#94a3b8';
+                c.beginPath();
+                c.moveTo(-2.8, -4);
+                c.lineTo(2.8, -4);
+                c.lineTo(2.8, -56);
+                c.lineTo(0, -64);
+                c.lineTo(-2.8, -56);
+                c.closePath();
+                c.fill(); c.stroke();
+                c.restore();
+
+                c.save();
+                c.font = '800 17px "Be Vietnam Pro"';
+                c.textAlign = cfg.align;
+                const lx = tipX + cfg.labelOffset.x;
+                const ly = tipY + cfg.labelOffset.y;
+                c.lineWidth = 4;
+                c.strokeStyle = '#ffffff';
+                c.strokeText(mat.label, lx, ly);
+                c.fillStyle = '#0f172a';
+                c.fillText(mat.label, lx, ly);
+                c.restore();
+            });
+
+            c.save();
+            c.translate(hubX, hubY);
+            c.fillStyle = activeBurner ? '#f97316' : '#eab308';
+            c.strokeStyle = '#a16207';
+            c.lineWidth = 2.5;
+            c.beginPath();
+            const hexR = 30;
+            for (let k = 0; k < 6; k++) {
+                const a = (k * Math.PI) / 3 - Math.PI / 6;
+                const hx = Math.cos(a) * hexR;
+                const hy = Math.sin(a) * hexR;
+                if (k === 0) c.moveTo(hx, hy);
+                else c.lineTo(hx, hy);
+            }
+            c.closePath();
+            c.fill();
+            c.stroke();
+            c.restore();
+
+            const burnerX = hubX;
+            const burnerY = hubY + 86;
+            drawAlcoholBurner(c, burnerX, burnerY, activeBurner, 0.92);
+            if (!isSnapshot) hitBoxes.burner2 = { x: burnerX - 35, y: burnerY - 50, w: 70, h: 95 };
+        }
+
+        // --- VẼ TN2: ĐỐI LƯU TRONG CHẤT LỎNG (ĐÃ DỊCH CHUYỂN CÂN ĐỐI KHÔNG BỊ CHE KHUẤT) ---
+        function drawSim3Liquid(c, w, h, forcedMode = null, isSnapshot = false) {
+            const mode = forcedMode || state.sim3Liquid.mode;
+            const cx = w / 2, cy = h / 2;
+
+            if (mode === 'tubes') {
+                const { burnerPos, tubeBurnerOn, showTube1Detail, showTube2Convection } = state.sim3Liquid;
+                const activeBurner = isSnapshot ? false : tubeBurnerOn;
+                if (!isSnapshot) {
+                    if (tubeBurnerOn) {
+                        if (burnerPos === 1) {
+                            state.sim3Liquid.tube1TopHeat = Math.min(1, state.sim3Liquid.tube1TopHeat + 0.009);
+                            state.sim3Liquid.tube1BotHeat = Math.min(0.08, state.sim3Liquid.tube1BotHeat + 0.0002);
+                        } else {
+                            state.sim3Liquid.tube2BotHeat = Math.min(1, state.sim3Liquid.tube2BotHeat + 0.008);
+                            state.sim3Liquid.tube2TopHeat = Math.min(0.95, state.sim3Liquid.tube2TopHeat + 0.0075);
+                            if (state.sim3Liquid.tube2TopHeat > 0.5) {
+                                state.sim3Liquid.wax2Melt = Math.min(1, state.sim3Liquid.wax2Melt + 0.006);
+                            }
+                        }
+                    } else {
+                        state.sim3Liquid.tube1TopHeat = Math.max(0, state.sim3Liquid.tube1TopHeat - 0.0025);
+                        state.sim3Liquid.tube1BotHeat = Math.max(0, state.sim3Liquid.tube1BotHeat - 0.0008);
+                        state.sim3Liquid.tube2BotHeat = Math.max(0, state.sim3Liquid.tube2BotHeat - 0.0016);
+                        state.sim3Liquid.tube2TopHeat = Math.max(0, state.sim3Liquid.tube2TopHeat - 0.0014);
+                    }
+                }
+
+                // Dịch cụm hai giá đỡ ống nghiệm sang trái (shiftLeft) và hạ nhẹ xuống để đầu ống nghiệm (2) nằm trọn vùng trống bên trái bảng điều khiển
+                const shiftLeft = isSnapshot ? 0 : Math.max(55, w * 0.11);
+                const spacing = Math.min(235, w * 0.31);
+                const t1X = cx - spacing / 2 - shiftLeft;
+                const t2X = cx + spacing / 2 - shiftLeft;
+                const baseY = cy + 132;
+
+                drawTiltedTestTube(c, t1X, baseY, '(1) Đun gần miệng ống', isSnapshot ? 0 : state.sim3Liquid.tube1TopHeat, isSnapshot ? 0 : state.sim3Liquid.tube1BotHeat, isSnapshot ? 0 : state.sim3Liquid.wax1Melt, 'bottom', false, false, !isSnapshot && showTube1Detail);
+                drawTiltedTestTube(c, t2X, baseY, '(2) Đun dưới đáy ống', isSnapshot ? 0 : state.sim3Liquid.tube2TopHeat, isSnapshot ? 0 : state.sim3Liquid.tube2BotHeat, isSnapshot ? 0 : state.sim3Liquid.wax2Melt, 'top', !isSnapshot && showTube2Convection && state.sim3Liquid.tube2BotHeat > 0.015, activeBurner && burnerPos === 2, false);
+
+                if (burnerPos === 1 || isSnapshot) {
+                    const blockX = t1X + 42, blockY = baseY - 76;
+                    c.fillStyle = '#ea580c';
+                    c.fillRect(blockX - 24, blockY, 48, 76);
+                    drawAlcoholBurner(c, blockX, blockY - 38, activeBurner, 0.85);
+                } else {
+                    const burnerX = t2X - 66, burnerY = baseY - 40;
+                    drawAlcoholBurner(c, burnerX, burnerY, activeBurner, 0.85);
+                }
+            } else {
+                // CHẾ ĐỘ B: BÌNH THUỐC TÍM - Nâng cụm bình & đèn cồn lên cao hơn thanh công cụ phía dưới để lộ rõ đáy bình, gói thuốc tím và toàn bộ ngọn lửa đèn cồn
+                const { beakerBurnerOn, showConvectionView, dyeTracers } = state.sim3Liquid;
+                const activeBurner = isSnapshot ? false : beakerBurnerOn;
+                if (!isSnapshot) {
+                    if (beakerBurnerOn) state.sim3Liquid.waterHeat = Math.min(1, state.sim3Liquid.waterHeat + 0.0022);
+                    else state.sim3Liquid.waterHeat = Math.max(0, state.sim3Liquid.waterHeat - 0.0012);
+                }
+                const heat = isSnapshot ? 0 : state.sim3Liquid.waterHeat;
+
+                const bkW = 185, bkH = 195;
+                const bkX = cx - bkW / 2 - (isSnapshot ? 0 : 25);
+                const bkY = isSnapshot ? (cy - 95) : Math.max(28, cy - 155);
+                const surfY = bkY + 28, botY = bkY + bkH;
+                const waterH = botY - surfY;
+
+                c.strokeStyle = '#334155'; c.lineWidth = 4;
+                c.beginPath();
+                c.moveTo(bkX - 18, botY + 5); c.lineTo(bkX + bkW + 18, botY + 5);
+                c.moveTo(bkX - 6, botY + 5); c.lineTo(bkX - 22, botY + 86);
+                c.moveTo(bkX + bkW + 6, botY + 5); c.lineTo(bkX + bkW + 22, botY + 86);
+                c.stroke();
+
+                c.save();
+                c.fillStyle = '#94a3b8';
+                c.fillRect(bkX - 12, botY + 1, bkW + 24, 4);
+                c.strokeStyle = '#475569';
+                c.lineWidth = 1.5;
+                c.setLineDash([4, 3]);
+                c.beginPath();
+                c.moveTo(bkX - 10, botY + 3);
+                c.lineTo(bkX + bkW + 10, botY + 3);
+                c.stroke();
+                c.restore();
+
+                let waterRgb;
+                if (heat < 0.5) {
+                    const u = heat / 0.5;
+                    const r = Math.round(186 + u * (249 - 186));
+                    const g = Math.round(230 + u * (115 - 230));
+                    const b = Math.round(253 + u * (22 - 253));
+                    waterRgb = `rgba(${r}, ${g}, ${b}, ${0.46 + u * 0.14})`;
+                } else {
+                    const u = (heat - 0.5) / 0.5;
+                    const r = Math.round(249 + u * (220 - 249));
+                    const g = Math.round(115 + u * (38 - 115));
+                    const b = Math.round(22 + u * (38 - 22));
+                    waterRgb = `rgba(${r}, ${g}, ${b}, ${0.60 + u * 0.16})`;
+                }
+                c.fillStyle = waterRgb;
+                c.fillRect(bkX + 3, surfY, bkW - 6, waterH - 2);
+
+                const packetX = bkX + 46, packetY = botY - 12;
+
+                if (!showConvectionView || isSnapshot) {
+                    c.save();
+                    if (heat > 0.015) {
+                        const plumeH = Math.min(waterH - 22, heat * (waterH - 18));
+                        const steps = 42;
+                        const ribbonGrad = c.createLinearGradient(packetX, packetY - 6, packetX, packetY - 6 - plumeH);
+                        ribbonGrad.addColorStop(0, `rgba(76, 29, 149, ${Math.min(0.88, 0.35 + heat * 0.65)})`);
+                        ribbonGrad.addColorStop(0.45, `rgba(107, 33, 168, ${Math.min(0.55, heat * 0.62)})`);
+                        ribbonGrad.addColorStop(0.8, `rgba(126, 34, 206, ${Math.min(0.25, heat * 0.32)})`);
+                        ribbonGrad.addColorStop(1, 'rgba(147, 51, 234, 0)');
+
+                        const leftPts = [];
+                        const rightPts = [];
+                        for (let i = 0; i <= steps; i++) {
+                            const f = i / steps;
+                            const py = (packetY - 6) - f * plumeH;
+                            const wave = Math.sin(f * 7.5 - state.time * 2.4) * (4 + f * 11)
+                                       + Math.cos(f * 3.8 - state.time * 1.5) * (2 + f * 5);
+                            const driftRight = Math.pow(f, 1.8) * 18;
+                            const halfW = (1 - f * 0.35) * (5 + Math.sin(f * 5 - state.time * 2) * 2 + f * 8);
+                            const cxRibbon = packetX + wave + driftRight;
+                            leftPts.push({ x: cxRibbon - halfW, y: py });
+                            rightPts.push({ x: cxRibbon + halfW, y: py });
+                        }
+
+                        c.fillStyle = ribbonGrad;
+                        c.beginPath();
+                        c.moveTo(leftPts[0].x, leftPts[0].y);
+                        for (let i = 1; i <= steps; i++) c.lineTo(leftPts[i].x, leftPts[i].y);
+                        for (let i = steps; i >= 0; i--) c.lineTo(rightPts[i].x, rightPts[i].y);
+                        c.closePath();
+                        c.fill();
+                    }
+
+                    const sqSize = Math.max(11, 18 - heat * 5);
+                    c.fillStyle = '#4c1d95';
+                    c.strokeStyle = '#3b0764';
+                    c.lineWidth = 1.5;
+                    c.beginPath();
+                    c.roundRect(packetX - sqSize / 2, botY - 3 - sqSize, sqSize, sqSize, 2);
+                    c.fill();
+                    c.stroke();
+                    c.restore();
+                } else {
+                    const leftX = bkX + 44, rightX = bkX + bkW - 42;
+                    const topY = surfY + 24, lowY = botY - 24;
+                    const flowFactor = Math.pow(heat, 1.15);
+
+                    c.save();
+                    c.globalAlpha = Math.max(0.35, Math.min(0.95, 0.25 + heat * 1.15));
+
+                    dyeTracers.forEach(tr => {
+                        if (heat > 0.01) {
+                            tr.progress = (tr.progress + tr.speed * (0.12 + flowFactor * 1.15)) % 1;
+                        }
+                        const p = tr.progress;
+                        let px, py;
+                        if (p < 0.32) {
+                            const u = p / 0.32;
+                            px = leftX + tr.lane * 80;
+                            py = lowY - u * (lowY - topY);
+                        } else if (p < 0.50) {
+                            const u = (p - 0.32) / 0.18;
+                            px = leftX + u * (rightX - leftX);
+                            py = topY + tr.lane * 50;
+                        } else if (p < 0.82) {
+                            const u = (p - 0.50) / 0.32;
+                            px = rightX + tr.lane * 80;
+                            py = topY + u * (lowY - topY);
+                        } else {
+                            const u = (p - 0.82) / 0.18;
+                            px = rightX - u * (rightX - leftX);
+                            py = lowY + tr.lane * 50;
+                        }
+                        c.fillStyle = '#6b21a8';
+                        c.beginPath(); c.arc(px, py, 3.8, 0, Math.PI * 2); c.fill();
+                    });
+
+                    if (heat > 0.02) {
+                        drawArrow(c, leftX, lowY - 12, leftX, topY + 12, '#ea580c', 'Nước nóng đi lên', 'outside-left');
+                        drawArrow(c, leftX + 16, topY, rightX - 16, topY, '#ea580c');
+                        drawArrow(c, rightX, topY + 12, rightX, lowY - 12, '#0284c7', 'Nước lạnh đi xuống', 'outside-right');
+                        drawArrow(c, rightX - 16, lowY, leftX + 16, lowY, '#0284c7');
+                    }
+                    c.restore();
+                }
+
+                c.strokeStyle = '#334155'; c.lineWidth = 4;
+                c.beginPath(); c.moveTo(bkX, bkY); c.lineTo(bkX, botY); c.lineTo(bkX + bkW, botY); c.lineTo(bkX + bkW, bkY); c.stroke();
+
+                if (!showConvectionView || isSnapshot) {
+                    const labelRightX = bkX - 24;
+                    const labelY = botY - 22;
+                    c.save();
+                    c.fillStyle = '#581c87';
+                    c.font = 'bold 12px "Be Vietnam Pro"';
+                    c.textAlign = 'right';
+                    c.fillText('Gói thuốc tím', labelRightX, labelY + 4);
+
+                    c.strokeStyle = '#581c87';
+                    c.lineWidth = 1.4;
+                    c.beginPath();
+                    c.moveTo(labelRightX + 6, labelY);
+                    c.lineTo(packetX - 9, botY - 11);
+                    c.stroke();
+
+                    c.fillStyle = '#581c87';
+                    c.beginPath();
+                    c.arc(packetX - 9, botY - 11, 3, 0, Math.PI * 2);
+                    c.fill();
+                    c.restore();
+                }
+
+                const burnerX = packetX, burnerY = botY + 52;
+                drawAlcoholBurner(c, burnerX, burnerY, activeBurner, 0.85);
+                if (!isSnapshot) hitBoxes.beakerBurner = { x: burnerX - 35, y: burnerY - 45, w: 70, h: 85 };
+            }
+        }
+
+        function drawTiltedTestTube(c, standX, baseY, title, topHeat, botHeat, waxMelt, waxPos, showConvection, isActivelyHeated = false, showDetailNote = false) {
+            c.fillStyle = '#eab308';
+            c.fillRect(standX - 28, baseY - 10, 56, 10);
+            c.fillStyle = '#64748b';
+            c.fillRect(standX - 3, baseY - 210, 6, 200);
+
+            const tiltAngle = -0.58;
+            const pivotX = standX;
+            const pivotY = baseY - 134;
+
+            c.save();
+            c.translate(pivotX, pivotY);
+            c.rotate(tiltAngle);
+
+            const r = 13;
+            const xStart = -90, xEnd = 112;
+            const waterEnd = xEnd - 26;
+
+            if (waxPos === 'top') {
+                // Ống nghiệm (2) đun dưới đáy: nước nóng chuyển dần từ xanh nhạt -> cam -> đỏ lan từ đáy ống lên trên
+                const grad = c.createLinearGradient(xStart, 0, waterEnd, 0);
+                const heatStage = (h) => {
+                    if (h <= 0.01) return 'rgba(125, 211, 252, 0.52)';
+                    if (h < 0.5) {
+                        const u = h / 0.5;
+                        const rr = Math.round(125 + u * (249 - 125));
+                        const gg = Math.round(211 + u * (115 - 211));
+                        const bb = Math.round(252 + u * (22 - 252));
+                        return `rgba(${rr}, ${gg}, ${bb}, ${0.52 + u * 0.16})`;
+                    } else {
+                        const u = (h - 0.5) / 0.5;
+                        const rr = Math.round(249 + u * (220 - 249));
+                        const gg = Math.round(115 + u * (38 - 115));
+                        const bb = Math.round(22 + u * (38 - 22));
+                        return `rgba(${rr}, ${gg}, ${bb}, ${0.68 + u * 0.14})`;
+                    }
+                };
+                const midHeat = botHeat * 0.55 + topHeat * 0.45;
+                grad.addColorStop(0, heatStage(botHeat));
+                grad.addColorStop(0.5, heatStage(midHeat));
+                grad.addColorStop(1, heatStage(topHeat));
+                c.fillStyle = grad;
+            } else {
+                // Ống nghiệm (1) đun gần miệng ống
+                const grad = c.createLinearGradient(xStart, 0, waterEnd, 0);
+                grad.addColorStop(0, 'rgba(125, 211, 252, 0.5)');
+                grad.addColorStop(0.65, 'rgba(125, 211, 252, 0.5)');
+                grad.addColorStop(1, topHeat > 0.05 ? `rgba(239, 68, 68, ${0.35 + topHeat * 0.45})` : 'rgba(125, 211, 252, 0.5)');
+                c.fillStyle = grad;
+            }
+
+            c.beginPath();
+            c.arc(xStart + r, 0, r - 2, Math.PI / 2, Math.PI * 1.5);
+            c.lineTo(waterEnd, -r + 2);
+            c.lineTo(waterEnd, r - 2);
+            c.closePath();
+            c.fill();
+
+            if (showConvection) {
+                const leftLoop = xStart + 20;
+                const rightLoop = waterEnd - 14;
+                const topTrack = -5.5;
+                const botTrack = 5.5;
+                const heatStrength = Math.max(botHeat, topHeat);
+                const loopAlpha = Math.min(0.92, heatStrength * 1.35);
+                const flowSpeed = isActivelyHeated
+                    ? 0.0022 * (0.45 + 0.55 * heatStrength)
+                    : 0.0022 * Math.pow(heatStrength, 1.3);
+                state.sim3Liquid.convectionPhase = (state.sim3Liquid.convectionPhase + flowSpeed) % 1;
+
+                c.save();
+                c.globalAlpha = loopAlpha;
+
+                c.strokeStyle = 'rgba(255, 255, 255, 0.55)';
+                c.lineWidth = 1.6;
+                c.beginPath();
+                c.moveTo(leftLoop + 6, topTrack);
+                c.lineTo(rightLoop - 6, topTrack);
+                c.quadraticCurveTo(rightLoop + 4, 0, rightLoop - 6, botTrack);
+                c.lineTo(leftLoop + 6, botTrack);
+                c.quadraticCurveTo(leftLoop - 4, 0, leftLoop + 6, topTrack);
+                c.stroke();
+
+                const numArrows = 8;
+                const phase = state.sim3Liquid.convectionPhase;
+                const segTop = rightLoop - leftLoop;
+                const segTurn = 16;
+                const totalPerim = 2 * segTop + 2 * segTurn;
+
+                for (let i = 0; i < numArrows; i++) {
+                    const u = (i / numArrows + phase) % 1;
+                    const dist = u * totalPerim;
+                    let ax, ay, ang, arrowColor;
+
+                    if (dist < segTop) {
+                        const f = dist / segTop;
+                        ax = leftLoop + f * segTop;
+                        ay = topTrack;
+                        ang = 0;
+                        arrowColor = '#ea580c';
+                    } else if (dist < segTop + segTurn) {
+                        const f = (dist - segTop) / segTurn;
+                        const theta = -Math.PI / 2 + f * Math.PI;
+                        ax = rightLoop + Math.cos(theta) * 5;
+                        ay = Math.sin(theta) * 5.5;
+                        ang = theta + Math.PI / 2;
+                        arrowColor = f < 0.5 ? '#ea580c' : '#0284c7';
+                    } else if (dist < 2 * segTop + segTurn) {
+                        const f = (dist - segTop - segTurn) / segTop;
+                        ax = rightLoop - f * segTop;
+                        ay = botTrack;
+                        ang = Math.PI;
+                        arrowColor = '#0284c7';
+                    } else {
+                        const f = (dist - 2 * segTop - segTurn) / segTurn;
+                        const theta = Math.PI / 2 + f * Math.PI;
+                        ax = leftLoop + Math.cos(theta) * 5;
+                        ay = Math.sin(theta) * 5.5;
+                        ang = theta + Math.PI / 2;
+                        arrowColor = f < 0.5 ? '#0284c7' : '#ea580c';
+                    }
+
+                    c.save();
+                    c.translate(ax, ay);
+                    c.rotate(ang);
+                    c.strokeStyle = arrowColor;
+                    c.fillStyle = arrowColor;
+                    c.lineWidth = 2.2;
+                    c.lineCap = 'round';
+                    c.beginPath();
+                    c.moveTo(-7, 0);
+                    c.lineTo(5, 0);
+                    c.stroke();
+
+                    c.beginPath();
+                    c.moveTo(7, 0);
+                    c.lineTo(1.5, -3.2);
+                    c.lineTo(1.5, 3.2);
+                    c.closePath();
+                    c.fill();
+                    c.restore();
+                }
+
+                c.restore();
+            }
+
+            c.strokeStyle = '#334155'; c.lineWidth = 2.5;
+            c.beginPath();
+            c.arc(xStart + r, 0, r, Math.PI / 2, Math.PI * 1.5);
+            c.lineTo(xEnd, -r);
+            c.moveTo(xStart + r, r);
+            c.lineTo(xEnd, r);
+            c.stroke();
+
+            const waxX = waxPos === 'bottom' ? xStart + 14 : xEnd - 32;
+            const waxRadius = Math.max(2, 6 * (1 - waxMelt * 0.75));
+            c.fillStyle = '#a16207';
+            c.beginPath(); c.arc(waxX, 3 + waxMelt * 3, waxRadius, 0, Math.PI * 2); c.fill();
+
+            const clampOffsetX = 46;
+            // Kẹp giữ ống nghiệm chắc chắn trên trục giá đỡ
+            c.fillStyle = '#334155';
+            c.beginPath();
+            c.roundRect(clampOffsetX - 13, -r - 6, 26, 6, 2);
+            c.roundRect(clampOffsetX - 13, r, 26, 6, 2);
+            c.fill();
+            c.fillStyle = '#94a3b8';
+            c.fillRect(clampOffsetX - 4, -r - 10, 8, 4);
+            c.fillRect(clampOffsetX - 4, r + 6, 8, 4);
+            c.restore();
+
+            const clampWorldX = pivotX + Math.cos(tiltAngle) * clampOffsetX;
+            const clampWorldY = pivotY + Math.sin(tiltAngle) * clampOffsetX;
+            // Tay đòn nối từ cột giá đỡ ra kẹp giữ ống nghiệm
+            c.strokeStyle = '#334155';
+            c.lineWidth = 5;
+            c.beginPath();
+            c.moveTo(standX, clampWorldY);
+            c.lineTo(clampWorldX, clampWorldY);
+            c.stroke();
+            // Khớp siết ốc cố định trên cột giá đỡ
+            c.fillStyle = '#1e293b';
+            c.beginPath();
+            c.roundRect(standX - 7, clampWorldY - 7, 14, 14, 3);
+            c.fill();
+            c.fillStyle = '#cbd5e1';
+            c.beginPath();
+            c.arc(standX, clampWorldY, 3, 0, Math.PI * 2);
+            c.fill();
+
+            if (showDetailNote) {
+                const botWorldX = pivotX + Math.cos(tiltAngle) * (xStart + 14);
+                const botWorldY = pivotY + Math.sin(tiltAngle) * (xStart + 14);
+                const boxW = 186, boxH = 44;
+                const boxX = Math.max(8, botWorldX - boxW - 18);
+                const boxY = botWorldY - 18;
+
+                c.save();
+                c.fillStyle = 'rgba(255, 251, 235, 0.96)';
+                c.strokeStyle = '#d97706';
+                c.lineWidth = 1.6;
+                c.beginPath();
+                c.roundRect(boxX, boxY, boxW, boxH, 8);
+                c.fill();
+                c.stroke();
+
+                c.beginPath();
+                c.moveTo(boxX + boxW, boxY + boxH / 2);
+                c.lineTo(botWorldX - 8, botWorldY + 2);
+                c.stroke();
+
+                c.fillStyle = '#92400e';
+                c.font = 'bold 11px "Be Vietnam Pro"';
+                c.textAlign = 'center';
+                c.fillText('Nhiệt không đi xuống đáy', boxX + boxW / 2, boxY + 18);
+                c.fillText('nên nước dẫn nhiệt kém', boxX + boxW / 2, boxY + 34);
+                c.restore();
+            }
+        }
+
+        // --- VẼ TN3: ĐỐI LƯU TRONG CHẤT KHÍ ---
+        function drawSim4Gas(c, w, h, isSnapshot = false) {
+            const { candlesOn, particles } = state.sim4Gas;
+            const activeCandles = isSnapshot ? false : candlesOn;
+            const cx = w / 2, baseY = h - 85;
+            const fanY = baseY - 225;
+
+            if (!isSnapshot) {
+                if (candlesOn) {
+                    state.sim4Gas.airTemp = Math.min(1, state.sim4Gas.airTemp + 0.008);
+                } else {
+                    state.sim4Gas.airTemp = Math.max(0, state.sim4Gas.airTemp - 0.004);
+                }
+                const targetSpeed = state.sim4Gas.airTemp * 0.075;
+                state.sim4Gas.fanSpeed += (targetSpeed - state.sim4Gas.fanSpeed) * 0.05;
+                state.sim4Gas.fanAngle += state.sim4Gas.fanSpeed;
+            }
+            const heat = isSnapshot ? 0 : state.sim4Gas.airTemp;
+
+            c.fillStyle = '#334155';
+            c.fillRect(cx - 85, baseY, 170, 12);
+            c.fillRect(cx - 4, fanY, 8, baseY - fanY);
+
+            [-72, 72].forEach(ox => {
+                const nx = cx + ox;
+                c.fillStyle = '#fef3c7';
+                c.strokeStyle = '#d97706';
+                c.lineWidth = 2;
+                c.fillRect(nx - 12, baseY - 58, 24, 58);
+                c.strokeRect(nx - 12, baseY - 58, 24, 58);
+
+                c.strokeStyle = '#334155';
+                c.lineWidth = 2;
+                c.beginPath(); c.moveTo(nx, baseY - 58); c.lineTo(nx, baseY - 65); c.stroke();
+
+                if (activeCandles) {
+                    const fl = Math.sin(state.time * 18 + ox) * 2;
+                    const grad = c.createRadialGradient(nx, baseY - 74, 2, nx, baseY - 74, 18);
+                    grad.addColorStop(0, '#fef08a');
+                    grad.addColorStop(0.6, '#f97316');
+                    grad.addColorStop(1, 'rgba(239, 68, 68, 0)');
+                    c.fillStyle = grad;
+                    c.beginPath();
+                    c.moveTo(nx - 8, baseY - 58);
+                    c.quadraticCurveTo(nx - 10, baseY - 76, nx + fl, baseY - 92);
+                    c.quadraticCurveTo(nx + 10, baseY - 76, nx + 8, baseY - 58);
+                    c.fill();
+                }
+            });
+
+            if (heat > 0.02) {
+                const topLoopY = fanY + 26;
+                const botLoopY = baseY - 42;
+                const midLoopY = (topLoopY + botLoopY) / 2;
+
+                particles.forEach(pt => {
+                    pt.progress = (pt.progress + 0.0065 * (0.3 + heat)) % 1;
+                    const p = pt.progress;
+                    const s = pt.side;
+                    const wobble = pt.offset * 0.25;
+                    let px = cx, py = botLoopY;
+                    let color = '#f97316';
+
+                    if (p < 0.5) {
+                        const u = p / 0.5;
+                        const innerBulge = Math.sin(u * Math.PI) * 20;
+                        const xStart = cx + s * 66;
+                        const xEnd = cx + s * 52;
+                        px = xStart + (xEnd - xStart) * u - s * innerBulge + wobble;
+                        py = (baseY - 104) + (topLoopY - (baseY - 104)) * u;
+                        color = '#f97316';
+                    } else {
+                        const u = (p - 0.5) / 0.5;
+                        const outerBulge = Math.sin(u * Math.PI) * 56;
+                        const xStart = cx + s * 72;
+                        const xEnd = cx + s * 76;
+                        px = xStart + (xEnd - xStart) * u + s * outerBulge + wobble;
+                        py = (topLoopY - 4) + ((baseY - 102) - (topLoopY - 4)) * u;
+                        color = '#0284c7';
+                    }
+
+                    c.save();
+                    c.globalAlpha = heat * 0.92;
+                    c.fillStyle = color;
+                    c.beginPath(); c.arc(px, py, 4, 0, Math.PI * 2); c.fill();
+                    c.restore();
+                });
+
+                c.save();
+                c.globalAlpha = heat * 0.95;
+                drawCurvedArrow(c, cx - 66, baseY - 106, cx - 42, midLoopY + 22, cx - 38, midLoopY - 22, cx - 52, topLoopY, '#f97316');
+                drawCurvedArrow(c, cx - 74, topLoopY - 6, cx - 148, topLoopY + 4, cx - 146, baseY - 98, cx - 76, baseY - 105, '#0284c7');
+                drawCurvedArrow(c, cx + 66, baseY - 106, cx + 42, midLoopY + 22, cx + 38, midLoopY - 22, cx + 52, topLoopY, '#f97316');
+                drawCurvedArrow(c, cx + 74, topLoopY - 6, cx + 148, topLoopY + 4, cx + 146, baseY - 98, cx + 76, baseY - 105, '#0284c7');
+                c.restore();
+            }
+
+            c.save();
+            c.translate(cx, fanY);
+            const blades = 8;
+            for (let i = 0; i < blades; i++) {
+                const ang = (isSnapshot ? 0 : state.sim4Gas.fanAngle) + (i * Math.PI * 2) / blades;
+                const scaleX = Math.cos(ang);
+                c.fillStyle = i % 2 === 0 ? '#f97316' : '#fb923c';
+                c.beginPath();
+                c.moveTo(0, 0);
+                c.lineTo(scaleX * 72, -14);
+                c.lineTo(scaleX * 78, 6);
+                c.closePath();
+                c.fill();
+            }
+            c.fillStyle = '#1e293b';
+            c.beginPath(); c.arc(0, 0, 5, 0, Math.PI * 2); c.fill();
+            c.restore();
+        }
+
+        // --- VẼ TN4: BỨC XẠ NHIỆT (ĐÃ CĂN CHỈNH TRÁNH BỊ CHE KHUẤT Ở CẢ CHẾ ĐỘ A VÀ B) ---
+        function drawSim5Rad(c, w, h, forcedMode = null, isSnapshot = false, forceWood = false) {
+            const mode = forcedMode || state.sim5Rad.mode;
+            const { lampOn, woodBlocked } = state.sim5Rad;
+            const activeLamp = isSnapshot ? false : lampOn;
+            const activeWood = isSnapshot ? forceWood : woodBlocked;
+            const cx = w / 2;
+            const cy = h / 2 + (isSnapshot ? 15 : 22);
+
+            if (mode === 'shield') {
+                if (!isSnapshot) {
+                    if (lampOn && !woodBlocked) {
+                        state.sim5Rad.heatLevel = Math.min(0.88, state.sim5Rad.heatLevel + 0.004);
+                    } else {
+                        state.sim5Rad.heatLevel = Math.max(0.15, state.sim5Rad.heatLevel - 0.0025);
+                    }
+                }
+                const lvl = isSnapshot ? 0.18 : state.sim5Rad.heatLevel;
+
+                // Dịch cụm dụng cụ sang trái và căn chiều cao giữa khoảng trống của bảng trên và thanh dưới
+                const shiftX = isSnapshot ? 0 : Math.max(55, w * 0.10);
+                const lampX = cx - Math.min(165, w * 0.22) - shiftX;
+                const lampY = cy + 12;
+                const flaskX = cx + Math.min(125, w * 0.17) - shiftX;
+                const flaskY = cy + 22;
+                const woodX = (lampX + flaskX) / 2 - 6;
+
+                c.fillStyle = '#475569';
+                c.fillRect(lampX - 24, lampY + 46, 48, 12);
+                c.fillRect(lampX - 8, lampY + 25, 16, 21);
+                c.fillStyle = activeLamp ? '#fef08a' : '#e2e8f0';
+                c.strokeStyle = '#64748b'; c.lineWidth = 2.5;
+                c.beginPath(); c.arc(lampX, lampY, 27, 0, Math.PI * 2); c.fill(); c.stroke();
+
+                if (activeLamp) {
+                    const glow = c.createRadialGradient(lampX, lampY, 6, lampX, lampY, 72);
+                    glow.addColorStop(0, 'rgba(254, 240, 138, 0.95)');
+                    glow.addColorStop(1, 'rgba(251, 191, 36, 0)');
+                    c.fillStyle = glow;
+                    c.beginPath(); c.arc(lampX, lampY, 72, 0, Math.PI * 2); c.fill();
+
+                    const startX = lampX + 33;
+                    const endX = activeWood ? woodX - 10 : flaskX - 46;
+                    [-18, 0, 18].forEach(oy => {
+                        drawArrow(c, startX, lampY + oy * 0.4, endX, lampY + oy, '#f97316');
+                    });
+
+                    c.save();
+                    c.fillStyle = '#ea580c';
+                    c.font = 'bold 12px "Be Vietnam Pro"';
+                    c.textAlign = 'center';
+                    c.fillText('Tia nhiệt', (startX + endX) / 2, lampY - 22);
+                    c.restore();
+                }
+
+                c.fillStyle = '#0f172a'; c.font = 'bold 12px "Be Vietnam Pro"'; c.textAlign = 'center';
+                c.fillText('Đèn điện dây tóc', lampX, lampY + 76);
+
+                if (activeWood) {
+                    c.fillStyle = '#b45309';
+                    c.strokeStyle = '#78350f';
+                    c.lineWidth = 2.5;
+                    c.beginPath();
+                    c.roundRect(woodX - 8, cy - 105, 16, 190, 4);
+                    c.fill(); c.stroke();
+                    c.fillStyle = '#78350f'; c.font = 'bold 12px "Be Vietnam Pro"'; c.textAlign = 'center';
+                    c.fillText('Tấm gỗ dày', woodX, cy - 114);
+                }
+
+                // Giá đỡ & Bình cầu phủ đen (căn gọn để chân đế và nhãn tên nằm trọn phía trên thanh điều khiển dưới)
+                const clampY = flaskY - 90;
+                const standTopY = cy - 115;
+                const standBaseY = cy + 82;
+                c.fillStyle = '#334155';
+                c.fillRect(flaskX + 54, standTopY, 8, standBaseY - standTopY);
+                c.fillRect(flaskX - 35, standBaseY, 110, 9);
+                c.fillRect(flaskX + 6, clampY - 3, 52, 6);
+                c.fillStyle = '#475569';
+                c.beginPath();
+                c.roundRect(flaskX - 10, clampY - 5, 20, 10, 3);
+                c.fill();
+
+                c.fillStyle = '#1e293b';
+                c.strokeStyle = '#0f172a';
+                c.lineWidth = 3;
+                c.beginPath(); c.arc(flaskX, flaskY, 42, 0, Math.PI * 2); c.fill(); c.stroke();
+                c.fillRect(flaskX - 12, flaskY - 64, 24, 25);
+                c.strokeRect(flaskX - 12, flaskY - 64, 24, 25);
+
+                drawQualitativeThermometer(c, flaskX, flaskY - 118, 136, lvl, 'Nhiệt kế', -6);
+
+                c.fillStyle = '#0f172a'; c.font = 'bold 12px "Be Vietnam Pro"'; c.textAlign = 'center';
+                c.fillText('Bình thủy tinh phủ đen', flaskX, standBaseY + 24);
+            } else {
+                // CHẾ ĐỘ B: SO SÁNH BÌNH PHỦ ĐEN VÀ BÌNH TRÁNG BẠC
+                // Hạ thấp cụm dụng cụ xuống dưới và dịch nhẹ sang trái để bình tráng bạc, cổ bình và nhãn "Nhiệt kế" nằm trọn vùng trống, không chạm bảng trên lẫn thanh dưới
+                if (!isSnapshot) {
+                    if (lampOn) {
+                        state.sim5Rad.blackHeat = Math.min(0.90, state.sim5Rad.blackHeat + 0.0042);
+                        state.sim5Rad.silverHeat = Math.min(0.32, state.sim5Rad.silverHeat + 0.0009);
+                    } else {
+                        state.sim5Rad.blackHeat = Math.max(0.15, state.sim5Rad.blackHeat - 0.0025);
+                        state.sim5Rad.silverHeat = Math.max(0.15, state.sim5Rad.silverHeat - 0.0015);
+                    }
+                }
+
+                const shiftX = isSnapshot ? 0 : Math.max(38, w * 0.06);
+                const centerGroupX = cx - shiftX;
+                const span = Math.min(185, w * 0.24);
+                const groupCy = isSnapshot ? cy : (h * 0.56);
+                const lampX = centerGroupX, lampY = groupCy + 14;
+                const leftFlaskX = centerGroupX - span, rightFlaskX = centerGroupX + span;
+                const flaskY = groupCy + 24;
+                const clampY = flaskY - 84;
+                const standTopY = groupCy - 108;
+                const standBaseY = groupCy + 78;
+
+                c.fillStyle = '#475569';
+                c.fillRect(lampX - 22, lampY + 44, 44, 11);
+                c.fillRect(lampX - 7, lampY + 23, 14, 21);
+                c.fillStyle = activeLamp ? '#fef08a' : '#e2e8f0';
+                c.strokeStyle = '#64748b'; c.lineWidth = 2.5;
+                c.beginPath(); c.arc(lampX, lampY, 24, 0, Math.PI * 2); c.fill(); c.stroke();
+
+                if (activeLamp) {
+                    const glow = c.createRadialGradient(lampX, lampY, 6, lampX, lampY, 85);
+                    glow.addColorStop(0, 'rgba(254, 240, 138, 0.95)');
+                    glow.addColorStop(0.55, 'rgba(253, 224, 71, 0.35)');
+                    glow.addColorStop(1, 'rgba(251, 191, 36, 0)');
+                    c.fillStyle = glow;
+                    c.beginPath(); c.arc(lampX, lampY, 85, 0, Math.PI * 2); c.fill();
+                }
+                c.fillStyle = '#0f172a'; c.font = 'bold 12px "Be Vietnam Pro"'; c.textAlign = 'center';
+                c.fillText('Đèn điện', lampX, standBaseY + 22);
+
+                // Bình phủ đen (trái)
+                c.fillStyle = '#334155';
+                c.fillRect(leftFlaskX - 58, standTopY, 7, standBaseY - standTopY);
+                c.fillRect(leftFlaskX - 72, standBaseY, 102, 9);
+                c.fillRect(leftFlaskX - 54, clampY - 3, 48, 6);
+                c.fillStyle = '#475569';
+                c.beginPath(); c.roundRect(leftFlaskX - 10, clampY - 5, 20, 10, 3); c.fill();
+
+                c.fillStyle = '#1e293b';
+                c.strokeStyle = '#0f172a';
+                c.lineWidth = 3;
+                c.beginPath(); c.arc(leftFlaskX, flaskY, 38, 0, Math.PI * 2); c.fill(); c.stroke();
+                c.fillRect(leftFlaskX - 11, flaskY - 60, 22, 24);
+                c.strokeRect(leftFlaskX - 11, flaskY - 60, 22, 24);
+                drawQualitativeThermometer(c, leftFlaskX, flaskY - 112, 128, isSnapshot ? 0.18 : state.sim5Rad.blackHeat, 'Nhiệt kế', -6);
+                c.fillStyle = '#0f172a'; c.font = 'bold 12px "Be Vietnam Pro"'; c.textAlign = 'center';
+                c.fillText('Bình phủ đen', leftFlaskX, standBaseY + 22);
+
+                // Bình tráng bạc (phải)
+                c.fillStyle = '#334155';
+                c.fillRect(rightFlaskX + 51, standTopY, 7, standBaseY - standTopY);
+                c.fillRect(rightFlaskX - 30, standBaseY, 102, 9);
+                c.fillRect(rightFlaskX + 6, clampY - 3, 48, 6);
+                c.fillStyle = '#475569';
+                c.beginPath(); c.roundRect(rightFlaskX - 10, clampY - 5, 20, 10, 3); c.fill();
+
+                const silverGrad = c.createLinearGradient(rightFlaskX - 38, flaskY - 38, rightFlaskX + 38, flaskY + 38);
+                silverGrad.addColorStop(0, '#f8fafc');
+                silverGrad.addColorStop(0.45, '#cbd5e1');
+                silverGrad.addColorStop(0.75, '#94a3b8');
+                silverGrad.addColorStop(1, '#e2e8f0');
+                c.fillStyle = silverGrad;
+                c.strokeStyle = '#475569';
+                c.lineWidth = 3;
+                c.beginPath(); c.arc(rightFlaskX, flaskY, 38, 0, Math.PI * 2); c.fill(); c.stroke();
+                c.fillRect(rightFlaskX - 11, flaskY - 60, 22, 24);
+                c.strokeRect(rightFlaskX - 11, flaskY - 60, 22, 24);
+                drawQualitativeThermometer(c, rightFlaskX, flaskY - 112, 128, isSnapshot ? 0.18 : state.sim5Rad.silverHeat, 'Nhiệt kế', -6);
+                c.fillStyle = '#0f172a'; c.font = 'bold 12px "Be Vietnam Pro"'; c.textAlign = 'center';
+                c.fillText('Bình tráng bạc', rightFlaskX, standBaseY + 22);
+            }
+        }
+
+        // Vẽ các ảnh chụp trạng thái ban đầu trích trực tiếp từ mô phỏng cho Nhiệm vụ 1
+        function renderInitialSnapshots() {
+            const renderScaled = (canvasId, virtualW, virtualH, drawFn) => {
+                const el = document.getElementById(canvasId);
+                if (!el) return;
+                const dpr = window.devicePixelRatio || 1;
+                const box = el.getBoundingClientRect();
+                const cw = Math.max(240, box.width || 280);
+                const ch = Math.max(120, box.height || 140);
+                el.width = cw * dpr;
+                el.height = ch * dpr;
+                const sctx = el.getContext('2d');
+                sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                sctx.clearRect(0, 0, cw, ch);
+
+                const scale = Math.min(cw / virtualW, ch / virtualH);
+                const ox = (cw - virtualW * scale) / 2;
+                const oy = (ch - virtualH * scale) / 2;
+                sctx.save();
+                sctx.translate(ox, oy);
+                sctx.scale(scale, scale);
+                drawFn(sctx, virtualW, virtualH);
+                sctx.restore();
+            };
+
+            renderScaled('snap-tn1a', 760, 420, (c, w, h) => drawSim1(c, w, h, true));
+            renderScaled('snap-tn1b', 760, 460, (c, w, h) => drawSim2Compare(c, w, h, true));
+            renderScaled('snap-tn2a', 760, 440, (c, w, h) => drawSim3Liquid(c, w, h, 'tubes', true));
+            renderScaled('snap-tn2b', 760, 460, (c, w, h) => drawSim3Liquid(c, w, h, 'beaker', true));
+            renderScaled('snap-tn3',  760, 450, (c, w, h) => drawSim4Gas(c, w, h, true));
+            renderScaled('snap-tn4a', 720, 450, (c, w, h) => drawSim5Rad(c, w, h, 'shield', true, false));
+            renderScaled('snap-tn4b', 720, 450, (c, w, h) => drawSim5Rad(c, w, h, 'shield', true, true));
+            renderScaled('snap-tn4c', 760, 450, (c, w, h) => drawSim5Rad(c, w, h, 'compare', true, false));
+        }
+
+        // Tương tác bấm trực tiếp lên đèn cồn trong Canvas
+        canvas.addEventListener('pointerdown', (e) => {
+            const rect = canvas.getBoundingClientRect();
+            const pos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+            const inside = (r) => r && pos.x >= r.x && pos.x <= r.x + r.w && pos.y >= r.y && pos.y <= r.y + r.h;
+
+            if (state.tab === 1 && state.sim1.mode === 'rod' && inside(hitBoxes.burner1)) {
+                state.sim1.burnerOn = !state.sim1.burnerOn;
+                renderSimControls();
+            } else if (state.tab === 1 && state.sim1.mode === 'compare' && inside(hitBoxes.burner2)) {
+                state.sim2Compare.burnerOn = !state.sim2Compare.burnerOn;
+                renderSimControls();
+            } else if (state.tab === 2 && state.sim3Liquid.mode === 'beaker' && inside(hitBoxes.beakerBurner)) {
+                state.sim3Liquid.beakerBurnerOn = !state.sim3Liquid.beakerBurnerOn;
+                renderSimControls();
+            }
+        });
+
+        function animate() {
+            state.time += 0.05;
+            if (!document.getElementById('stage-2').classList.contains('hidden')) {
+                const rect = canvas.parentElement.getBoundingClientRect();
+                if (rect.width > 0 && rect.height > 0) {
+                    ctx.clearRect(0, 0, rect.width, rect.height);
+                    ctx.strokeStyle = 'rgba(148, 163, 184, 0.14)';
+                    ctx.lineWidth = 1;
+                    for (let x = 0; x < rect.width; x += 36) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, rect.height); ctx.stroke(); }
+                    for (let y = 0; y < rect.height; y += 36) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(rect.width, y); ctx.stroke(); }
+
+                    if (state.tab === 1) {
+                        if (state.sim1.mode === 'rod') drawSim1(ctx, rect.width, rect.height, false);
+                        else drawSim2Compare(ctx, rect.width, rect.height, false);
+                    } else if (state.tab === 2) {
+                        drawSim3Liquid(ctx, rect.width, rect.height, null, false);
+                    } else if (state.tab === 3) {
+                        drawSim4Gas(ctx, rect.width, rect.height, false);
+                    } else if (state.tab === 4) {
+                        drawSim5Rad(ctx, rect.width, rect.height, null, false, false);
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        // =========================================================================
+        // PHẦN 3: QUẢN LÝ PHIẾU HỌC TẬP, MỞ KHÓA 3 GIAI ĐOẠN & XUẤT PDF
+        // =========================================================================
+        const STORAGE_KEY = 'khtn8_bai28_worksheet_v4';
+
+        const STAGE1_REQUIRED = [
+            'p_tn1_order', 'p_tn1_compare',
+            'p_tn2_tubes', 'p_tn2_beaker',
+            'p_tn3_fan', 'p_tn3_air',
+            'p_tn4_lamp', 'p_tn4_shield', 'p_tn4_surface'
+        ];
+        const STAGE2_REQUIRED = [
+            'o_tn1_a', 'o_tn1_atom', 'o_tn1_b',
+            'o_tn2_a', 'o_tn2_b',
+            'o_tn3_a', 'o_tn3_b',
+            'o_tn4_a', 'o_tn4_b'
+        ];
+        const STAGE3_REQUIRED = [
+            'eval_tn1', 'eval_tn2', 'eval_tn3', 'eval_tn4',
+            'q1_ans', 'q2_ans', 'q3_ans',
+            'know_char_conduction', 'know_char_convection', 'know_char_radiation',
+            'know_env_conduction', 'know_env_convection', 'know_env_radiation'
+        ];
+
+        let unlockState = {
+            groupReady: false,
+            currentStage: 1,
+            stage2: false,
+            stage3: false
+        };
+
+        let groupMeta = {
+            groupName: '',
+            execDate: new Date().toISOString().split('T')[0],
+            members: ['', '', '', '']
+        };
+
+        // Hàm điền tự động dữ liệu dự đoán và quan sát sang Phần A của Nhiệm vụ 3
+        function populateComparisonView() {
+            const mapKeys = [
+                { p: 'p_tn1_order', o: 'o_tn1_a', cp: 'compare-p-tn1', co: 'compare-o-tn1' },
+                { p: 'p_tn2_tubes', o: 'o_tn2_a', cp: 'compare-p-tn2', co: 'compare-o-tn2' },
+                { p: 'p_tn3_fan',   o: 'o_tn3_a', cp: 'compare-p-tn3', co: 'compare-o-tn3' },
+                { p: 'p_tn4_lamp',  o: 'o_tn4_a', cp: 'compare-p-tn4', co: 'compare-o-tn4' }
+            ];
+            mapKeys.forEach(item => {
+                const pVal = getFieldVal(item.p);
+                const oVal = getFieldVal(item.o);
+                const cpEl = document.getElementById(item.cp);
+                const coEl = document.getElementById(item.co);
+                if (cpEl) cpEl.textContent = pVal || '(Chưa nhập dự đoán ở NV1)';
+                if (coEl) coEl.textContent = oVal || '(Chưa nhập quan sát ở NV2)';
+            });
+        }
+
+        function addMemberRow() {
+            groupMeta.members.push('');
+            renderMembersInputs();
+        }
+
+        function removeMemberRow(idx) {
+            if (groupMeta.members.length <= 1) return;
+            groupMeta.members.splice(idx, 1);
+            renderMembersInputs();
+        }
+
+        function renderMembersInputs() {
+            const container = document.getElementById('members-list');
+            if (!container) return;
+            container.innerHTML = groupMeta.members.map((m, idx) => `
+                <div class="flex items-center gap-2">
+                    <span class="text-xs font-bold text-slate-400 w-5 text-right">${idx + 1}.</span>
+                    <input type="text" value="${m.replace(/"/g, '&quot;')}" oninput="groupMeta.members[${idx}] = this.value" placeholder="Họ và tên thành viên ${idx + 1}" class="flex-1 px-3 py-2 text-xs sm:text-sm rounded-xl border border-slate-300 bg-slate-50 font-medium">
+                    ${groupMeta.members.length > 1 ? `
+                        <button type="button" onclick="removeMemberRow(${idx})" class="p-2 text-slate-400 hover:text-red-500 rounded-lg" title="Xóa thành viên">
+                            <i data-lucide="x" class="w-4 h-4"></i>
+                        </button>
+                    ` : ''}
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function startWorksheet() {
+            const gName = document.getElementById('input-group-name').value.trim();
+            const eDate = document.getElementById('input-exec-date').value.trim();
+            const cleanMembers = groupMeta.members.map(m => m.trim()).filter(Boolean);
+            const errBox = document.getElementById('group-form-error');
+
+            if (!gName || !eDate || cleanMembers.length === 0) {
+                errBox.textContent = 'Vui lòng nhập đầy đủ Tên nhóm, Ngày thực hiện và ít nhất 1 họ tên thành viên trước khi bắt đầu!';
+                errBox.classList.remove('hidden');
+                return;
+            }
+            errBox.classList.add('hidden');
+
+            groupMeta.groupName = gName;
+            groupMeta.execDate = eDate;
+            unlockState.groupReady = true;
+
+            saveWorksheet();
+            applyGroupDisplay();
+            showWorksheetScreen();
+        }
+
+        function editGroupInfo() {
+            document.getElementById('input-group-name').value = groupMeta.groupName;
+            document.getElementById('input-exec-date').value = groupMeta.execDate;
+            renderMembersInputs();
+            document.getElementById('worksheet-main').classList.add('hidden');
+            document.getElementById('stage-nav').classList.add('hidden');
+            document.getElementById('btn-edit-group').classList.add('hidden');
+            document.getElementById('group-setup-screen').classList.remove('hidden');
+        }
+
+        function applyGroupDisplay() {
+            const cleanMembers = groupMeta.members.map(m => m.trim()).filter(Boolean);
+            document.getElementById('disp-group-name').textContent = groupMeta.groupName;
+            document.getElementById('disp-exec-date').textContent = groupMeta.execDate.split('-').reverse().join('/');
+            document.getElementById('disp-members').textContent = cleanMembers.join(', ');
+            document.getElementById('header-group-badge').textContent = `${groupMeta.groupName} • ${cleanMembers.length} thành viên`;
+        }
+
+        function showWorksheetScreen() {
+            document.getElementById('group-setup-screen').classList.add('hidden');
+            document.getElementById('worksheet-main').classList.remove('hidden');
+            document.getElementById('stage-nav').classList.remove('hidden');
+            document.getElementById('stage-nav').classList.add('flex');
+            document.getElementById('btn-edit-group').classList.remove('hidden');
+            document.getElementById('btn-edit-group').classList.add('inline-flex');
+
+            switchStage(unlockState.currentStage || 1);
+            setTimeout(renderInitialSnapshots, 50);
+        }
+
+        function getFieldVal(key) {
+            const radios = document.querySelectorAll(`input[type="radio"][data-field="${key}"]`);
+            if (radios.length > 0) {
+                const checked = Array.from(radios).find(r => r.checked);
+                return checked ? checked.value.trim() : '';
+            }
+            const el = document.querySelector(`[data-field="${key}"]`);
+            return el ? el.value.trim() : '';
+        }
+
+        function checkListFilled(keys) {
+            return keys.every(k => getFieldVal(k).length > 0);
+        }
+
+        function updateUnlockButtonsUI() {
+            const s1Ready = checkListFilled(STAGE1_REQUIRED);
+            const btn2 = document.getElementById('btn-unlock-2');
+            if (s1Ready) {
+                btn2.className = "btn-phet bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-md shrink-0";
+                btn2.innerHTML = `<i data-lucide="unlock" class="w-4 h-4"></i><span>Mở khóa Nhiệm vụ 2: Phòng thí nghiệm ảo</span>`;
+            } else {
+                btn2.className = "btn-phet bg-slate-300 text-slate-600 font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl flex items-center gap-2 cursor-not-allowed shrink-0";
+                btn2.innerHTML = `<i data-lucide="lock" class="w-4 h-4"></i><span>Hoàn thành dự đoán & Mở khóa Thí nghiệm</span>`;
+            }
+
+            const s2Ready = checkListFilled(STAGE2_REQUIRED);
+            const btn3 = document.getElementById('btn-unlock-3');
+            if (s2Ready) {
+                btn3.className = "btn-phet bg-purple-700 hover:bg-purple-800 text-white font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl flex items-center gap-2 shadow-md shrink-0";
+                btn3.innerHTML = `<i data-lucide="unlock" class="w-4 h-4"></i><span>Mở khóa Nhiệm vụ 3: Giải thích & Kiến thức</span>`;
+            } else {
+                btn3.className = "btn-phet bg-slate-300 text-slate-600 font-extrabold text-xs sm:text-sm px-5 py-2.5 rounded-xl flex items-center gap-2 cursor-not-allowed shrink-0";
+                btn3.innerHTML = `<i data-lucide="lock" class="w-4 h-4"></i><span>Hoàn thành quan sát & Mở khóa Giải thích</span>`;
+            }
+
+            const s3Ready = checkListFilled(STAGE3_REQUIRED);
+            const submitHint = document.getElementById('stage3-submit-hint');
+            if (submitHint) {
+                if (s3Ready) {
+                    submitHint.textContent = '✓ Đã hoàn thành đầy đủ Phần A và Phần B! Bạn có thể gửi bài qua Gmail cho giáo viên hoặc xuất phiếu PDF.';
+                    submitHint.className = 'text-xs font-bold text-emerald-700';
+                } else {
+                    submitHint.textContent = 'Hoàn thành đầy đủ Phần A và Phần B để gửi bài trực tiếp qua Gmail cho giáo viên hoặc xuất phiếu PDF.';
+                    submitHint.className = 'text-xs text-slate-600';
+                }
+            }
+
+            updateObsCompletionBadges();
+            renderStageHeaderButtons();
+            lucide.createIcons();
+        }
+
+        function renderStageHeaderButtons() {
+            const cur = unlockState.currentStage;
+            const b1 = document.getElementById('stage-btn-1');
+            const b2 = document.getElementById('stage-btn-2');
+            const b3 = document.getElementById('stage-btn-3');
+
+            b1.className = cur === 1
+                ? "px-3 py-1.5 rounded-lg text-xs font-extrabold whitespace-nowrap bg-white text-[#ea580c] shadow-xs flex items-center gap-1.5"
+                : "px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-orange-100 hover:bg-white/15 flex items-center gap-1.5";
+
+            if (unlockState.stage2) {
+                b2.innerHTML = `<i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i><span>2. Thí nghiệm & Quan sát</span>`;
+                b2.className = cur === 2
+                    ? "px-3 py-1.5 rounded-lg text-xs font-extrabold whitespace-nowrap bg-white text-[#ea580c] shadow-xs flex items-center gap-1.5"
+                    : "px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-orange-100 hover:bg-white/15 flex items-center gap-1.5";
+            } else {
+                b2.innerHTML = `<i data-lucide="lock" class="w-3.5 h-3.5"></i><span>2. Thí nghiệm & Quan sát</span>`;
+                b2.className = "px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-orange-200/60 cursor-not-allowed flex items-center gap-1.5";
+            }
+
+            if (unlockState.stage3) {
+                b3.innerHTML = `<i data-lucide="check-circle-2" class="w-3.5 h-3.5 text-emerald-400"></i><span>3. Giải thích & Kiến thức</span>`;
+                b3.className = cur === 3
+                    ? "px-3 py-1.5 rounded-lg text-xs font-extrabold whitespace-nowrap bg-white text-[#ea580c] shadow-xs flex items-center gap-1.5"
+                    : "px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-orange-100 hover:bg-white/15 flex items-center gap-1.5";
+            } else {
+                b3.innerHTML = `<i data-lucide="lock" class="w-3.5 h-3.5"></i><span>3. Giải thích & Kiến thức</span>`;
+                b3.className = "px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap text-orange-200/60 cursor-not-allowed flex items-center gap-1.5";
+            }
+        }
+
+        function switchStage(s) {
+            if (s === 2 && !unlockState.stage2) {
+                tryUnlockStage2();
+                return;
+            }
+            if (s === 3 && !unlockState.stage3) {
+                tryUnlockStage3();
+                return;
+            }
+            unlockState.currentStage = s;
+            saveWorksheet();
+
+            [1, 2, 3].forEach(i => {
+                const panel = document.getElementById(`stage-${i}`);
+                if (i === s) panel.classList.remove('hidden');
+                else panel.classList.add('hidden');
+            });
+
+            if (s === 1) {
+                setTimeout(renderInitialSnapshots, 40);
+            } else if (s === 2) {
+                switchSimTab(state.tab);
+            } else if (s === 3) {
+                populateComparisonView();
+            }
+            renderStageHeaderButtons();
+            lucide.createIcons();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function highlightMissingFields(keys, hintId, msg) {
+            let firstMissing = null;
+            keys.forEach(k => {
+                if (getFieldVal(k).length === 0) {
+                    const el = document.querySelector(`[data-field="${k}"]`);
+                    if (el) {
+                        if (el.type === 'radio') {
+                            const box = el.closest('.space-y-2');
+                            if (box) box.classList.add('ring-2', 'ring-red-400', 'rounded-xl', 'p-1');
+                        } else {
+                            el.classList.add('border-red-500', 'bg-red-50/40');
+                        }
+                        if (!firstMissing) firstMissing = el;
+                    }
+                }
+            });
+            const hint = document.getElementById(hintId);
+            if (hint) {
+                hint.textContent = msg;
+                hint.className = "text-xs font-bold text-red-600";
+            }
+            if (firstMissing) {
+                firstMissing.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                firstMissing.focus();
+            }
+        }
+
+        function tryUnlockStage2() {
+            if (!checkListFilled(STAGE1_REQUIRED)) {
+                highlightMissingFields(STAGE1_REQUIRED, 'stage1-hint', 'Vẫn còn câu hỏi dự đoán chưa điền (đã đánh dấu viền đỏ). Hãy điền đủ cả 9 dự đoán để mở khóa!');
+                return;
+            }
+            unlockState.stage2 = true;
+            saveWorksheet();
+            switchStage(2);
+        }
+
+        function tryUnlockStage3() {
+            if (!checkListFilled(STAGE2_REQUIRED)) {
+                const tabMap = [
+                    { tab: 1, keys: ['o_tn1_a', 'o_tn1_atom', 'o_tn1_b'] },
+                    { tab: 2, keys: ['o_tn2_a', 'o_tn2_b'] },
+                    { tab: 3, keys: ['o_tn3_a', 'o_tn3_b'] },
+                    { tab: 4, keys: ['o_tn4_a', 'o_tn4_b'] }
+                ];
+                const firstIncomplete = tabMap.find(item => !checkListFilled(item.keys));
+                if (firstIncomplete) switchSimTab(firstIncomplete.tab);
+                highlightMissingFields(STAGE2_REQUIRED, 'stage2-hint', 'Vẫn còn câu hỏi quan sát chưa điền (đã chuyển tới thí nghiệm còn thiếu). Hãy hoàn thành đủ cả 4 thí nghiệm!');
+                return;
+            }
+            unlockState.stage3 = true;
+            saveWorksheet();
+            switchStage(3);
+        }
+
+        // Lưu & khôi phục dữ liệu toàn phiếu
+        function saveWorksheet() {
+            const fieldsData = {};
+            document.querySelectorAll('[data-field]').forEach(el => {
+                const key = el.getAttribute('data-field');
+                if (el.type === 'radio') {
+                    if (el.checked) fieldsData[key] = el.value;
+                    else if (!(key in fieldsData)) fieldsData[key] = '';
+                } else {
+                    fieldsData[key] = el.value;
+                }
+            });
+            const payload = {
+                groupMeta,
+                unlockState,
+                fieldsData,
+                teacherEmail: document.getElementById('teacher-email-input')?.value || ''
+            };
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+            } catch (e) {}
+            updateUnlockButtonsUI();
+        }
+
+        function loadWorksheet() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                if (!raw) {
+                    document.getElementById('input-exec-date').value = groupMeta.execDate;
+                    renderMembersInputs();
+                    return;
+                }
+                const saved = JSON.parse(raw);
+                if (saved.groupMeta) groupMeta = saved.groupMeta;
+                if (saved.unlockState) unlockState = { ...unlockState, ...saved.unlockState };
+                if (saved.teacherEmail && document.getElementById('teacher-email-input')) {
+                    document.getElementById('teacher-email-input').value = saved.teacherEmail;
+                }
+                if (saved.fieldsData) {
+                    Object.entries(saved.fieldsData).forEach(([k, v]) => {
+                        const radios = document.querySelectorAll(`input[type="radio"][data-field="${k}"]`);
+                        if (radios.length > 0) {
+                            radios.forEach(r => { r.checked = (r.value === v); });
+                        } else {
+                            const el = document.querySelector(`[data-field="${k}"]`);
+                            if (el) el.value = v;
+                        }
+                    });
+                }
+
+                document.getElementById('input-group-name').value = groupMeta.groupName;
+                document.getElementById('input-exec-date').value = groupMeta.execDate;
+                renderMembersInputs();
+
+                if (unlockState.groupReady) {
+                    applyGroupDisplay();
+                    showWorksheetScreen();
+                }
+                updateUnlockButtonsUI();
+            } catch (e) {
+                renderMembersInputs();
+            }
+        }
+
+        document.querySelectorAll('[data-field]').forEach(el => {
+            const evt = (el.tagName === 'SELECT' || el.type === 'radio') ? 'change' : 'input';
+            el.addEventListener(evt, () => {
+                if (el.type === 'radio') {
+                    const box = el.closest('.space-y-2');
+                    if (box) box.classList.remove('ring-2', 'ring-red-400', 'rounded-xl', 'p-1');
+                } else {
+                    el.classList.remove('border-red-500', 'bg-red-50/40');
+                }
+                saveWorksheet();
+            });
+        });
+
+        document.getElementById('teacher-email-input')?.addEventListener('input', saveWorksheet);
+
+        // Tổng hợp toàn bộ bài làm thành báo cáo chuẩn
+        function buildFullReportText() {
+            const cleanMembers = groupMeta.members.map(m => m.trim()).filter(Boolean).join(', ');
+            const evalMap = {
+                match: 'Dự đoán hoàn toàn phù hợp',
+                part: 'Phù hợp một phần',
+                diff: 'Khác biệt nhiều so với thực tế'
+            };
+            const fmtEval = (v) => evalMap[v] || v || '(Chưa đánh giá)';
+
+            return [
+                `====================================================================`,
+                `PHIẾU HỌC TẬP SỐ TÍCH HỢP PTN ẢO • KHTN 8 - BÀI 28: SỰ TRUYỀN NHIỆT`,
+                `====================================================================`,
+                `1. THÔNG TIN NHÓM THỰC HIỆN`,
+                `• Tên nhóm: ${groupMeta.groupName}`,
+                `• Ngày thực hiện: ${groupMeta.execDate.split('-').reverse().join('/')}`,
+                `• Các thành viên: ${cleanMembers}`,
+                ``,
+                `2. NHIỆM VỤ 1 – DỰ ĐOÁN BAN ĐẦU`,
+                `[TN1] 1.1 Thứ tự đinh rơi: ${getFieldVal('p_tn1_order')} | 1.2 So sánh 3 thanh: ${getFieldVal('p_tn1_compare')}`,
+                `[TN2] 2.1 Hai ống nghiệm: ${getFieldVal('p_tn2_tubes')} | 2.2 Bình thuốc tím: ${getFieldVal('p_tn2_beaker')}`,
+                `[TN3] 3.1 Chong chóng giấy: ${getFieldVal('p_tn3_fan')} | 3.2 Không khí nóng/lạnh: ${getFieldVal('p_tn3_air')}`,
+                `[TN4] 4.1 Bật đèn: ${getFieldVal('p_tn4_lamp')} | 4.2 Tấm gỗ chắn: ${getFieldVal('p_tn4_shield')} | 4.3 Bề mặt đen/bạc: ${getFieldVal('p_tn4_surface')}`,
+                ``,
+                `3. NHIỆM VỤ 2 – KẾT QUẢ QUAN SÁT THỰC HÀNH`,
+                `[TN1 - Sự dẫn nhiệt]`,
+                `  • 1.1 Thanh đồng AB: ${getFieldVal('o_tn1_a')}`,
+                `  • 1.2 Góc nhìn nguyên tử (dao động & truyền năng lượng): ${getFieldVal('o_tn1_atom')}`,
+                `  • 1.3 So sánh 3 chất liệu (Đồng, Thép, Thủy tinh): ${getFieldVal('o_tn1_b')}`,
+                `[TN2 - Đối lưu trong chất lỏng]`,
+                `  • 2.1 Hai ống nghiệm: ${getFieldVal('o_tn2_a')}`,
+                `  • 2.2 Bình thuốc tím: ${getFieldVal('o_tn2_b')}`,
+                `[TN3 - Đối lưu trong chất khí]`,
+                `  • 3.1 Chong chóng giấy: ${getFieldVal('o_tn3_a')}`,
+                `  • 3.2 Luồng khí nóng/lạnh: ${getFieldVal('o_tn3_b')}`,
+                `[TN4 - Bức xạ nhiệt]`,
+                `  • 4.1 Tấm gỗ chắn: ${getFieldVal('o_tn4_a')}`,
+                `  • 4.2 Bình phủ đen & tráng bạc: ${getFieldVal('o_tn4_b')}`,
+                ``,
+                `4. NHIỆM VỤ 3 – ĐỐI CHIẾU KẾT QUẢ, GIẢI THÍCH HIỆN TƯỢNG VÀ RÚT RA KIẾN THỨC`,
+                `[Phần A - Đối chiếu dự đoán & thực nghiệm]`,
+                `  • Đánh giá TN1: ${fmtEval(getFieldVal('eval_tn1'))}`,
+                `  • Đánh giá TN2: ${fmtEval(getFieldVal('eval_tn2'))}`,
+                `  • Đánh giá TN3: ${fmtEval(getFieldVal('eval_tn3'))}`,
+                `  • Đánh giá TN4: ${fmtEval(getFieldVal('eval_tn4'))}`,
+                `[Phần B - Giải thích hiện tượng & Rút ra kiến thức]`,
+                `  • Câu 1 (Bản chất dẫn nhiệt): ${getFieldVal('q1_ans')}`,
+                `  • Câu 2 (Bản chất đối lưu): ${getFieldVal('q2_ans')}`,
+                `  • Câu 3 (Bản chất bức xạ nhiệt): ${getFieldVal('q3_ans')}`,
+                `  • Hoạt động rút ra kiến thức - Đặc điểm truyền nhiệt:`,
+                `    - Dẫn nhiệt: ${getFieldVal('know_char_conduction')}`,
+                `    - Đối lưu: ${getFieldVal('know_char_convection')}`,
+                `    - Bức xạ nhiệt: ${getFieldVal('know_char_radiation')}`,
+                `  • Hoạt động rút ra kiến thức - Môi trường truyền nhiệt:`,
+                `    - Dẫn nhiệt (chủ yếu): ${getFieldVal('know_env_conduction')}`,
+                `    - Đối lưu: ${getFieldVal('know_env_convection')}`,
+                `    - Bức xạ nhiệt: ${getFieldVal('know_env_radiation')}`,
+                `  • Ghi chú bổ sung: ${getFieldVal('b_optional_note') || '(Không có)'}`,
+                `====================================================================`
+            ].join('\n');
+        }
+
+        function exportWorksheetPDF() {
+            const printMap = {
+                'print-o-tn1-a': 'o_tn1_a',
+                'print-o-tn1-atom': 'o_tn1_atom',
+                'print-o-tn1-b': 'o_tn1_b',
+                'print-o-tn2-a': 'o_tn2_a',
+                'print-o-tn2-b': 'o_tn2_b',
+                'print-o-tn3-a': 'o_tn3_a',
+                'print-o-tn3-b': 'o_tn3_b',
+                'print-o-tn4-a': 'o_tn4_a',
+                'print-o-tn4-b': 'o_tn4_b'
+            };
+            Object.entries(printMap).forEach(([elId, field]) => {
+                const el = document.getElementById(elId);
+                if (el) el.textContent = getFieldVal(field);
+            });
+            window.print();
+        }
+
+        function submitToTeacherGmail() {
+            const fb = document.getElementById('submit-feedback');
+            if (!checkListFilled(STAGE3_REQUIRED)) {
+                highlightMissingFields(STAGE3_REQUIRED, 'stage3-submit-hint', 'Vui lòng hoàn thành đầy đủ Phần A và Phần B trước khi gửi bài cho giáo viên!');
+                fb.textContent = 'Chưa thể gửi: Vẫn còn mục chưa hoàn thành ở Phần A hoặc Phần B.';
+                fb.className = 'text-xs font-bold px-3.5 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700';
+                fb.classList.remove('hidden');
+                return;
+            }
+
+            const email = document.getElementById('teacher-email-input').value.trim();
+            if (!email || !email.includes('@')) {
+                fb.textContent = 'Vui lòng nhập đúng địa chỉ Gmail của giáo viên trước khi gửi!';
+                fb.className = 'text-xs font-bold px-3.5 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-700';
+                fb.classList.remove('hidden');
+                document.getElementById('teacher-email-input').focus();
+                return;
+            }
+
+            const subject = `[KHTN 8 - Bài 28] Phiếu học tập số - ${groupMeta.groupName}`;
+            const body = buildFullReportText();
+
+            const gmailComposeUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(email)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+            window.open(gmailComposeUrl, '_blank');
+
+            fb.innerHTML = `✓ Đã mở cửa sổ soạn thư Gmail gửi tới <strong>${email}</strong> với đầy đủ nội dung bài làm của <strong>${groupMeta.groupName}</strong>. Hãy nhấn nút <strong>Gửi (Send)</strong> trong Gmail để hoàn tất!`;
+            fb.className = 'text-xs font-bold px-3.5 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-800';
+            fb.classList.remove('hidden');
+        }
+
+        function openSummaryModal() {
+            document.getElementById('summary-textarea').value = buildFullReportText();
+            const m = document.getElementById('summary-modal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function closeSummaryModal() {
+            const m = document.getElementById('summary-modal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function copyReportText() {
+            const ta = document.getElementById('summary-textarea');
+            ta.select();
+            ta.setSelectionRange(0, 99999);
+            document.execCommand('copy');
+            const btn = document.getElementById('btn-copy-report');
+            btn.innerHTML = `<i data-lucide="check" class="w-4 h-4"></i><span>Đã sao chép!</span>`;
+            lucide.createIcons();
+            setTimeout(() => {
+                btn.innerHTML = `<i data-lucide="copy" class="w-4 h-4"></i><span>Sao chép toàn bộ</span>`;
+                lucide.createIcons();
+            }, 2000);
+        }
+
+        function openResetConfirm() {
+            const m = document.getElementById('reset-modal');
+            m.classList.remove('hidden');
+            m.classList.add('flex');
+        }
+
+        function closeResetConfirm() {
+            const m = document.getElementById('reset-modal');
+            m.classList.add('hidden');
+            m.classList.remove('flex');
+        }
+
+        function confirmFullReset() {
+            localStorage.removeItem(STORAGE_KEY);
+            location.reload();
+        }
+
+        window.onload = () => {
+            loadWorksheet();
+            resizeCanvas();
+            switchSimTab(1);
+            animate();
+            lucide.createIcons();
+        };
+    </script>
+</body>
+</html>
